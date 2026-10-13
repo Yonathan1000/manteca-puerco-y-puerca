@@ -1,0 +1,2736 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Puerco y Puerca — Manteca Artesanal 100% Natural</title>
+  <meta name="description" content="Manteca de puerco artesanal 100% natural. Cocina con sabor real. Envíos en Valencia, San Diego, Naguanagua y Los Guayos.">
+
+  <!-- Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- Leaflet Map for Interactive Delivery Picker -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+  <style>
+    /* ══════════════════ RESET ══════════════════ */
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{font-size:16px;overflow-x:clip}
+    body{
+      font-family:'Inter',system-ui,-apple-system,sans-serif;
+      color:#1a1a1a;background:#0a0704;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow-x:clip;
+    }
+
+    /* ══════════════════ VARIABLES ══════════════════ */
+    :root{
+      --gold:#d4a24c;
+      --gold-light:#f0cc7a;
+      --gold-glow:rgba(212,162,76,.35);
+      --gold-dark:#a07830;
+      --cream:#fdf8ef;
+      --cream-dim:rgba(253,248,239,.06);
+      --brown-dark:#1a0f08;
+      --brown-rich:#2c1810;
+      --brown-mid:#6b4a35;
+      --green:#5a9e6f;
+      --red:#d45a4f;
+      --glass:rgba(12,7,3,.72);
+      --glass-border:rgba(212,162,76,.15);
+      --glass-light:rgba(253,248,239,.88);
+      --r:20px;--r-sm:12px;--r-xs:8px;
+      --ease:cubic-bezier(.4,0,.2,1);
+      --ease-spring:cubic-bezier(.175,.885,.32,1.275);
+    }
+
+    /* ══════════════════ CUSTOM SCROLLBAR ══════════════════ */
+    ::-webkit-scrollbar{width:6px}
+    ::-webkit-scrollbar-track{background:var(--brown-dark)}
+    ::-webkit-scrollbar-thumb{background:var(--gold-dark);border-radius:10px}
+    ::-webkit-scrollbar-thumb:hover{background:var(--gold)}
+
+    /* ══════════════════ NAVIGATION ══════════════════ */
+    .nav{
+      position:fixed;top:0;left:0;right:0;z-index:1000;
+      padding:.5rem 0;
+      background:transparent;
+      transition:background .5s var(--ease),box-shadow .5s var(--ease),padding .3s;
+    }
+    .nav.scrolled{
+      background:rgba(12,7,3,.92);
+      backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+      box-shadow:0 1px 0 var(--glass-border);
+      padding:.25rem 0;
+    }
+    .nav-inner{
+      max-width:1280px;margin:0 auto;padding:0 2rem;
+      display:flex;align-items:center;justify-content:space-between;height:60px;
+    }
+    .nav-brand{
+      font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:800;
+      color:var(--gold);text-decoration:none;letter-spacing:.01em;
+      display:flex;align-items:center;gap:.5rem;
+    }
+    .nav-brand .ampersand{
+      font-style:italic;font-weight:400;color:var(--cream);opacity:.5;font-size:1rem;
+    }
+    .nav-links{display:flex;gap:.15rem;list-style:none;align-items:center}
+    .nav-links a{
+      color:rgba(253,248,239,.55);text-decoration:none;
+      font-size:.8rem;font-weight:500;
+      padding:.5rem .85rem;border-radius:50px;
+      transition:all .3s var(--ease);
+      position:relative;
+    }
+    .nav-links a::after{
+      content:'';position:absolute;bottom:6px;left:50%;
+      width:0;height:1.5px;background:var(--gold);
+      transition:width .3s var(--ease),left .3s var(--ease);
+    }
+    .nav-links a:hover{color:var(--cream)}
+    .nav-links a:hover::after,
+    .nav-links a.active::after{width:60%;left:20%}
+    .nav-links a.active{color:var(--gold)}
+    .nav-cta{
+      background:linear-gradient(135deg,var(--gold),var(--gold-dark))!important;
+      color:var(--brown-dark)!important;font-weight:700!important;
+      padding:.55rem 1.5rem!important;
+      box-shadow:0 0 20px var(--gold-glow);
+    }
+    .nav-cta::after{display:none!important}
+    .nav-cta:hover{transform:scale(1.04);box-shadow:0 0 30px var(--gold-glow)}
+
+    /* Hamburger */
+    .nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:.5rem;z-index:10}
+    .nav-toggle span{
+      display:block;width:22px;height:1.5px;background:var(--cream);
+      margin:5px 0;transition:.3s var(--ease);border-radius:2px;
+    }
+    .nav-toggle.open span:nth-child(1){transform:rotate(45deg) translate(4.5px,4.5px)}
+    .nav-toggle.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+    .nav-toggle.open span:nth-child(3){transform:rotate(-45deg) translate(4.5px,-4.5px)}
+
+    @media(max-width:900px){
+      .nav-toggle{display:block}
+      .nav-links{
+        position:fixed;top:0;right:-100%;width:min(320px,85vw);height:100vh;
+        background:rgba(12,7,3,.97);backdrop-filter:blur(30px);
+        flex-direction:column;padding:5rem 2rem 2rem;gap:.25rem;
+        transition:right .4s var(--ease);
+        box-shadow:-20px 0 60px rgba(0,0,0,.5);
+      }
+      .nav-links.open{right:0}
+      .nav-links a{font-size:1.05rem;padding:.9rem 1rem;width:100%;border-radius:var(--r-sm)}
+      .nav-links a::after{display:none}
+      .nav-cta{text-align:center;margin-top:1rem}
+    }
+
+    /* ══════════════════ VIDEO HERO — CANVAS APPROACH ══════════════════ */
+    .video-hero-wrapper{position:relative;height:400vh}
+    .video-hero-sticky{
+      position:sticky;top:0;width:100%;height:100vh;overflow:hidden;
+      background:#0a0704;
+    }
+    #heroCanvas{
+      position:absolute;top:0;left:0;width:100%;height:100%;
+      object-fit:cover;
+    }
+    .video-overlay{
+      position:absolute;inset:0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 50%, transparent 20%, rgba(10,7,4,.55) 100%),
+        linear-gradient(to bottom, rgba(10,7,4,.5) 0%, transparent 25%, transparent 75%, rgba(10,7,4,.7) 100%);
+      pointer-events:none;
+    }
+    /* Vignette corners */
+    .video-overlay::after{
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse at center,transparent 50%,rgba(10,7,4,.4) 100%);
+    }
+
+    /* Scroll progress bar */
+    .scroll-progress{
+      position:absolute;bottom:0;left:0;height:2px;
+      background:linear-gradient(90deg,var(--gold),var(--gold-light));
+      width:0;z-index:10;
+      box-shadow:0 0 12px var(--gold-glow);
+    }
+
+    /* Video text panels — premium glass */
+    .video-text-panel{
+      position:absolute;padding:2.5rem 3rem;
+      border-radius:var(--r);
+      max-width:560px;
+      opacity:0;transform:translateY(20px) scale(.97);
+      transition:opacity .6s var(--ease),transform .6s var(--ease);
+      pointer-events:none;
+    }
+    .video-text-panel.visible{
+      opacity:1;transform:translateY(0) scale(1);
+      pointer-events:auto;
+    }
+    .vtp-glass{
+      background:var(--glass);
+      backdrop-filter:blur(24px) saturate(1.4);
+      -webkit-backdrop-filter:blur(24px) saturate(1.4);
+      border:1px solid var(--glass-border);
+      box-shadow:
+        0 24px 80px rgba(0,0,0,.4),
+        inset 0 1px 0 rgba(255,255,255,.05);
+    }
+    .vtp-accent{
+      background:linear-gradient(135deg,rgba(212,162,76,.12),rgba(212,162,76,.04));
+      backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+      border:1px solid rgba(212,162,76,.25);
+      box-shadow:0 24px 80px rgba(0,0,0,.3),0 0 40px rgba(212,162,76,.08);
+    }
+    .vtp-label{
+      font-size:.7rem;font-weight:700;text-transform:uppercase;
+      letter-spacing:.2em;color:var(--gold-light);margin-bottom:.75rem;
+      display:flex;align-items:center;gap:.5rem;
+    }
+    .vtp-label::before{
+      content:'';width:20px;height:1px;background:var(--gold);
+    }
+    .vtp-title{
+      font-family:'Playfair Display',serif;
+      font-size:clamp(1.8rem,4.5vw,3.2rem);
+      font-weight:800;line-height:1.1;color:var(--cream);
+      margin-bottom:1rem;
+    }
+    .vtp-title .gold{
+      background:linear-gradient(135deg,var(--gold-light),var(--gold));
+      -webkit-background-clip:text;background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    .vtp-body{
+      font-size:clamp(.9rem,1.6vw,1.05rem);
+      line-height:1.7;color:rgba(253,248,239,.7);
+    }
+    .panel-center{top:50%;left:50%;transform:translate(-50%,-50%)!important;text-align:center;max-width:700px}
+    .panel-center.visible{transform:translate(-50%,-50%) scale(1)!important}
+    .panel-center .vtp-label::before{display:none}
+    .panel-center .vtp-label{justify-content:center}
+    .panel-left{top:50%;left:5%;transform:translateY(-50%) translateX(-20px)!important}
+    .panel-left.visible{transform:translateY(-50%) translateX(0)!important}
+    .panel-right{top:50%;right:5%;transform:translateY(-50%) translateX(20px)!important}
+    .panel-right.visible{transform:translateY(-50%) translateX(0)!important}
+    .panel-bottom{bottom:8%;left:50%;transform:translateX(-50%) translateY(20px)!important;text-align:center;max-width:600px}
+    .panel-bottom.visible{transform:translateX(-50%) translateY(0)!important}
+    .panel-bottom .vtp-label::before{display:none}
+    .panel-bottom .vtp-label{justify-content:center}
+
+    @media(max-width:768px){
+      .video-text-panel{padding:1.75rem 2rem;max-width:88%}
+      .panel-left,.panel-right{left:6%!important;right:6%!important;max-width:88%}
+    }
+
+    /* ══════════════════ SECTIONS SHARED ══════════════════ */
+    section{padding:7rem 2rem;position:relative}
+    .section-inner{max-width:1100px;margin:0 auto}
+    .section-label{
+      font-size:.7rem;font-weight:700;text-transform:uppercase;
+      letter-spacing:.2em;color:var(--gold);margin-bottom:.75rem;
+      display:flex;align-items:center;gap:.75rem;
+    }
+    .section-label::before{
+      content:'';width:32px;height:1.5px;
+      background:linear-gradient(90deg,var(--gold),transparent);
+    }
+    .section-title{
+      font-family:'Playfair Display',serif;
+      font-size:clamp(2.2rem,5.5vw,3.5rem);
+      font-weight:800;line-height:1.08;margin-bottom:1.5rem;
+    }
+    .section-subtitle{
+      font-size:1.1rem;line-height:1.8;max-width:600px;margin-bottom:3.5rem;
+      opacity:.7;
+    }
+    /* Decorative orbs */
+    .orb{
+      position:absolute;border-radius:50%;
+      background:radial-gradient(circle,var(--gold-glow),transparent 70%);
+      opacity:.3;pointer-events:none;filter:blur(60px);
+    }
+
+    /* ══════════════════ BUTTONS ══════════════════ */
+    .btn{
+      display:inline-flex;align-items:center;gap:.6rem;
+      padding:1rem 2.5rem;border-radius:60px;
+      font-size:1rem;font-weight:700;text-decoration:none;
+      border:none;cursor:pointer;transition:all .35s var(--ease);
+      position:relative;overflow:hidden;
+    }
+    .btn::before{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);
+      opacity:0;transition:opacity .3s;
+    }
+    .btn:hover::before{opacity:1}
+    .btn-primary{
+      background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+      color:var(--brown-dark);
+      box-shadow:0 4px 24px var(--gold-glow),0 0 0 0 var(--gold-glow);
+    }
+    .btn-primary:hover{
+      transform:translateY(-3px);
+      box-shadow:0 8px 40px var(--gold-glow),0 0 0 4px rgba(212,162,76,.12);
+    }
+    .btn-outline{
+      background:transparent;color:var(--cream);
+      border:1.5px solid rgba(212,162,76,.4);
+    }
+    .btn-outline:hover{
+      border-color:var(--gold);background:rgba(212,162,76,.08);
+      transform:translateY(-2px);
+    }
+    .btn-whatsapp{
+      background:linear-gradient(135deg,#25d366,#128c42);color:#fff;
+      box-shadow:0 4px 24px rgba(37,211,102,.25);
+    }
+    .btn-whatsapp:hover{
+      transform:translateY(-3px);
+      box-shadow:0 8px 40px rgba(37,211,102,.35);
+    }
+
+    /* ══════════════════ INICIO ══════════════════ */
+    #inicio{
+      background:linear-gradient(180deg,#0a0704 0%,#140d07 50%,#1a1008 100%);
+      color:var(--cream);text-align:center;
+      padding-top:8rem;overflow:hidden;position:relative;
+    }
+    #inicio .orb-1{width:500px;height:500px;top:-100px;right:-150px}
+    #inicio .orb-2{width:400px;height:400px;bottom:-100px;left:-150px}
+    .hero-badge{
+      display:inline-flex;align-items:center;gap:.4rem;
+      background:rgba(212,162,76,.1);border:1px solid rgba(212,162,76,.25);
+      color:var(--gold-light);font-size:.75rem;font-weight:600;
+      padding:.5rem 1.25rem;border-radius:50px;
+      letter-spacing:.08em;text-transform:uppercase;
+      margin-bottom:1.5rem;
+      animation:pulse-glow 3s ease-in-out infinite;
+    }
+    @keyframes pulse-glow{
+      0%,100%{box-shadow:0 0 0 0 rgba(212,162,76,.15)}
+      50%{box-shadow:0 0 0 12px rgba(212,162,76,0)}
+    }
+    #inicio .section-label{justify-content:center}
+    #inicio .section-label::before{display:none}
+    #inicio .section-title{color:var(--cream)}
+    #inicio .section-subtitle{margin:0 auto 1.5rem;color:rgba(253,248,239,.6)}
+    .hero-price{
+      display:inline-flex;align-items:baseline;gap:.4rem;
+      margin:1.5rem 0 2.5rem;
+    }
+    .hero-price .currency{
+      font-size:1.5rem;font-weight:600;
+      color:var(--gold);
+    }
+    .hero-price .amount{
+      font-family:'Playfair Display',serif;font-size:5rem;font-weight:900;
+      background:linear-gradient(135deg,var(--gold-light),var(--gold));
+      -webkit-background-clip:text;background-clip:text;
+      -webkit-text-fill-color:transparent;line-height:1;
+    }
+    .hero-price .unit{font-size:.95rem;color:rgba(253,248,239,.5);margin-left:.25rem}
+    .hero-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+    .hero-trust{
+      margin-top:3.5rem;display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;
+    }
+    .trust-item{text-align:center}
+    .trust-item .num{
+      font-family:'Playfair Display',serif;font-size:2rem;font-weight:800;
+      color:var(--gold);display:block;
+    }
+    .trust-item .label{font-size:.75rem;color:rgba(253,248,239,.4);text-transform:uppercase;letter-spacing:.1em}
+
+    /* Hero Jar Preview */
+    .hero-jar-preview{
+      width:min(260px,70vw);margin:1.5rem auto 1rem;position:relative;
+    }
+    .hero-jar-img{
+      width:100%;height:auto;border-radius:20px;
+      border:1px solid rgba(212,162,76,.25);
+      box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 40px var(--gold-glow);
+      display:block;transition:all .5s var(--ease);
+    }
+    .hero-jar-preview:hover .hero-jar-img{
+      transform:translateY(-6px) scale(1.03);
+      box-shadow:0 30px 80px rgba(0,0,0,.7),0 0 60px rgba(212,162,76,.35);
+      border-color:var(--gold);
+    }
+
+    /* ══════════════════ PRODUCTO ══════════════════ */
+    #producto{
+      background:linear-gradient(180deg,#1a1008,#0f0a05 40%,#0a0704);
+      color:var(--cream);position:relative;overflow:hidden;
+    }
+    #producto .section-title{color:var(--cream)}
+    #producto .section-subtitle{color:rgba(253,248,239,.55)}
+    .product-grid{
+      display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;
+    }
+    @media(max-width:768px){.product-grid{grid-template-columns:1fr;gap:2.5rem}}
+    .product-visual{
+      background:linear-gradient(145deg,rgba(212,162,76,.06),rgba(212,162,76,.02));
+      border:1px solid rgba(212,162,76,.12);
+      border-radius:24px;padding:3rem 2rem 2.5rem;text-align:center;
+      position:relative;
+    }
+    .product-visual::before{
+      content:'';position:absolute;inset:-1px;border-radius:25px;
+      background:conic-gradient(from 180deg,transparent,var(--gold-glow),transparent,transparent);
+      opacity:.4;z-index:-1;animation:rotate-border 8s linear infinite;
+    }
+    @keyframes rotate-border{to{transform:rotate(360deg)}}
+    .product-render-box{
+      position:relative;width:min(340px,100%);margin:0 auto 1.5rem;
+      border-radius:20px;overflow:hidden;
+      box-shadow:0 24px 60px rgba(0,0,0,.6),0 0 40px rgba(212,162,76,.15);
+      border:1px solid rgba(212,162,76,.25);
+      transition:all .5s var(--ease);
+    }
+    .product-render-box:hover{
+      transform:translateY(-6px) scale(1.02);
+      box-shadow:0 32px 80px rgba(0,0,0,.7),0 0 60px rgba(212,162,76,.3);
+      border-color:var(--gold);
+    }
+    .product-render-img{
+      width:100%;height:auto;display:block;object-fit:cover;
+    }
+    .product-render-badge{
+      position:absolute;bottom:12px;left:50%;transform:translateX(-50%);
+      background:rgba(12,7,3,.85);backdrop-filter:blur(12px);
+      border:1px solid rgba(212,162,76,.3);color:var(--gold-light);
+      font-size:.72rem;font-weight:700;padding:.35rem 1rem;
+      border-radius:50px;white-space:nowrap;letter-spacing:.05em;
+      box-shadow:0 4px 16px rgba(0,0,0,.4);
+    }
+    .product-visual-label{font-size:.9rem;color:rgba(253,248,239,.5);font-weight:500}
+    .product-visual-title{
+      font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:800;
+      color:var(--cream);margin-top:.5rem;
+    }
+    .product-detail-list{list-style:none}
+    .product-detail-list li{
+      display:flex;align-items:flex-start;gap:1.25rem;
+      padding:1.25rem 0;
+      border-bottom:1px solid rgba(212,162,76,.06);
+    }
+    .product-detail-list li:last-child{border-bottom:none}
+    .detail-icon{
+      flex-shrink:0;width:48px;height:48px;border-radius:14px;
+      background:linear-gradient(135deg,rgba(212,162,76,.15),rgba(212,162,76,.05));
+      border:1px solid rgba(212,162,76,.15);
+      display:flex;align-items:center;justify-content:center;font-size:1.3rem;
+    }
+    .detail-text h4{font-weight:700;font-size:.95rem;color:var(--cream);margin-bottom:.3rem}
+    .detail-text p{font-size:.85rem;color:rgba(253,248,239,.5);line-height:1.6}
+
+    /* Packs */
+    .packs-section{margin-top:5rem}
+    .packs{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2.5rem}
+    @media(max-width:640px){.packs{grid-template-columns:1fr}}
+    .pack-card{
+      background:rgba(212,162,76,.03);
+      border:1px solid rgba(212,162,76,.1);
+      border-radius:var(--r);padding:2rem 1.5rem;text-align:center;
+      transition:all .4s var(--ease);position:relative;
+      cursor:pointer;
+    }
+    .pack-card:hover{
+      border-color:rgba(212,162,76,.3);
+      background:rgba(212,162,76,.06);
+      transform:translateY(-6px);
+      box-shadow:0 20px 60px rgba(0,0,0,.3),0 0 30px rgba(212,162,76,.08);
+    }
+    .pack-card.popular{
+      border-color:rgba(212,162,76,.35);
+      background:linear-gradient(135deg,rgba(212,162,76,.08),rgba(212,162,76,.03));
+      box-shadow:0 0 40px rgba(212,162,76,.1);
+    }
+    .pack-badge{
+      position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+      background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+      color:var(--brown-dark);font-size:.65rem;font-weight:800;
+      padding:.4rem 1.25rem;border-radius:50px;white-space:nowrap;
+      text-transform:uppercase;letter-spacing:.08em;
+      box-shadow:0 4px 16px var(--gold-glow);
+    }
+    .pack-render-box{
+      width:110px;height:110px;margin:0 auto 1rem;position:relative;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .pack-img{
+      width:100%;height:100%;object-fit:cover;border-radius:14px;
+      border:1px solid rgba(212,162,76,.2);
+      box-shadow:0 10px 24px rgba(0,0,0,.5);
+      transition:all .4s var(--ease);
+    }
+    .pack-card:hover .pack-img{transform:scale(1.06)}
+    .pack-render-duo{position:relative}
+    .pack-render-duo .duo-left{
+      position:absolute;width:82px;height:82px;left:0;top:14px;
+      transform:rotate(-8deg);opacity:.88;z-index:1;
+    }
+    .pack-render-duo .duo-right{
+      position:absolute;width:88px;height:88px;right:0;top:8px;
+      transform:rotate(6deg);z-index:2;
+      box-shadow:0 12px 30px rgba(0,0,0,.6);
+    }
+    .pack-card.popular:hover .duo-left{
+      transform:rotate(-12deg) translateX(-6px);
+    }
+    .pack-card.popular:hover .duo-right{
+      transform:rotate(10deg) translateX(6px) scale(1.05);
+    }
+    .pack-render-quad .quad-main{
+      width:96px;height:96px;
+    }
+    .pack-badge-qty{
+      position:absolute;bottom:0px;right:-4px;
+      background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+      color:var(--brown-dark);font-size:.7rem;font-weight:900;
+      padding:.2rem .65rem;border-radius:50px;
+      box-shadow:0 4px 12px var(--gold-glow);z-index:3;
+    }
+    .pack-name{font-weight:700;font-size:1rem;color:var(--cream);margin-bottom:.35rem}
+    .pack-price{
+      font-family:'Playfair Display',serif;font-size:2rem;font-weight:800;
+      background:linear-gradient(135deg,var(--gold-light),var(--gold));
+      -webkit-background-clip:text;background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    .pack-save{font-size:.75rem;color:var(--green);font-weight:600;margin-top:.35rem}
+
+    /* ══════════════════ POR QUÉ MANTECA ══════════════════ */
+    #porque{
+      background:linear-gradient(180deg,#0a0704,#120904);
+      color:var(--cream);position:relative;overflow:hidden;
+    }
+    #porque .section-title{color:var(--cream)}
+    #porque .section-subtitle{color:rgba(253,248,239,.5)}
+    .compare-wrapper{
+      background:rgba(255,255,255,.02);
+      border:1px solid rgba(212,162,76,.08);
+      border-radius:var(--r);overflow:hidden;
+      box-shadow:0 24px 80px rgba(0,0,0,.3);
+    }
+    .compare-table{width:100%;border-collapse:collapse}
+    .compare-table thead th{
+      padding:1.25rem 1.5rem;font-size:.85rem;font-weight:700;
+      text-align:left;text-transform:uppercase;letter-spacing:.08em;
+    }
+    .compare-table thead th:first-child{
+      background:rgba(255,255,255,.02);color:rgba(253,248,239,.4);
+    }
+    .compare-table thead th:nth-child(2){
+      background:linear-gradient(135deg,rgba(212,162,76,.2),rgba(212,162,76,.1));
+      color:var(--gold-light);
+    }
+    .compare-table thead th:nth-child(3){
+      background:rgba(255,255,255,.03);color:rgba(253,248,239,.4);
+    }
+    .compare-table tbody td{
+      padding:1.1rem 1.5rem;font-size:.88rem;
+      border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top;
+    }
+    .compare-table tbody tr:last-child td{border-bottom:none}
+    .compare-table tbody td:first-child{
+      font-weight:600;color:rgba(253,248,239,.6);
+    }
+    .compare-table tbody td:nth-child(2){
+      background:rgba(212,162,76,.03);color:rgba(253,248,239,.85);
+    }
+    .compare-table tbody td:nth-child(3){color:rgba(253,248,239,.4)}
+    .check{color:var(--green);font-weight:600}
+    .cross{color:var(--red);font-weight:600}
+    @media(max-width:640px){
+      .compare-table thead th,.compare-table tbody td{padding:.8rem .65rem;font-size:.78rem}
+    }
+
+    /* ══════════════════ EN TU COCINA ══════════════════ */
+    #cocina{
+      background:linear-gradient(180deg,#120904,#1a100a,#0f0a05);
+      color:var(--cream);position:relative;overflow:hidden;
+    }
+    #cocina .section-title{color:var(--cream)}
+    #cocina .section-subtitle{color:rgba(253,248,239,.5)}
+    .recipe-grid{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;
+    }
+    @media(max-width:900px){.recipe-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:560px){.recipe-grid{grid-template-columns:1fr}}
+    .recipe-card{
+      background:rgba(255,255,255,.02);
+      border:1px solid rgba(212,162,76,.06);
+      border-radius:var(--r);padding:2rem;
+      transition:all .4s var(--ease);position:relative;overflow:hidden;
+    }
+    .recipe-card::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:3px;
+      background:linear-gradient(90deg,var(--gold),var(--gold-light),var(--gold));
+      opacity:0;transition:opacity .3s;
+    }
+    .recipe-card:hover{
+      border-color:rgba(212,162,76,.2);
+      background:rgba(212,162,76,.04);
+      transform:translateY(-8px);
+      box-shadow:0 20px 60px rgba(0,0,0,.25);
+    }
+    .recipe-card:hover::before{opacity:1}
+    .recipe-emoji{font-size:2.8rem;margin-bottom:1rem}
+    .recipe-name{
+      font-family:'Playfair Display',serif;font-weight:700;
+      font-size:1.15rem;color:var(--cream);margin-bottom:.5rem;
+    }
+    .recipe-desc{font-size:.85rem;color:rgba(253,248,239,.45);line-height:1.7}
+
+    .tips-box{
+      background:linear-gradient(135deg,rgba(212,162,76,.08),rgba(212,162,76,.02));
+      border:1px solid rgba(212,162,76,.15);
+      border-radius:var(--r);padding:3rem;margin-top:3rem;
+    }
+    .tips-box h3{
+      font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:800;
+      color:var(--gold);margin-bottom:1.5rem;
+      display:flex;align-items:center;gap:.75rem;
+    }
+    .tips-list{
+      list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:.85rem;
+    }
+    @media(max-width:640px){.tips-list{grid-template-columns:1fr}}
+    .tips-list li{
+      font-size:.9rem;color:rgba(253,248,239,.65);line-height:1.6;
+      padding-left:2rem;position:relative;
+    }
+    .tips-list li::before{
+      content:'';position:absolute;left:0;top:6px;
+      width:14px;height:14px;border-radius:50%;
+      background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+      box-shadow:0 0 8px var(--gold-glow);
+    }
+    .tips-list li::after{
+      content:'✓';position:absolute;left:3px;top:4px;
+      font-size:.6rem;font-weight:800;color:var(--brown-dark);
+    }
+
+    /* ══════════════════ DELIVERY & MAP ══════════════════ */
+    #delivery{
+      background:linear-gradient(180deg,#0f0a05,#0a0704);
+      color:var(--cream);position:relative;overflow:hidden;
+    }
+    #delivery .section-title{color:var(--cream)}
+    #delivery .section-subtitle{color:rgba(253,248,239,.5);max-width:680px}
+
+    .delivery-wrapper{
+      display:grid;grid-template-columns:1.25fr 1fr;gap:2rem;
+      align-items:stretch;margin-top:1.5rem;
+    }
+    @media(max-width:960px){.delivery-wrapper{grid-template-columns:1fr}}
+
+    .map-card{
+      background:rgba(255,255,255,.02);
+      border:1px solid rgba(212,162,76,.15);
+      border-radius:var(--r);padding:1.5rem;
+      display:flex;flex-direction:column;gap:1rem;
+      box-shadow:0 20px 60px rgba(0,0,0,.4);
+    }
+    .map-header{
+      display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;
+    }
+    .map-header h3{
+      font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--cream);
+      display:flex;align-items:center;gap:.5rem;
+    }
+    .zone-chips{
+      display:flex;gap:.4rem;flex-wrap:wrap;
+    }
+    .zone-chip{
+      background:rgba(212,162,76,.08);border:1px solid rgba(212,162,76,.2);
+      color:rgba(253,248,239,.8);font-size:.72rem;font-weight:600;
+      padding:.35rem .75rem;border-radius:50px;cursor:pointer;
+      transition:all .3s var(--ease);user-select:none;
+    }
+    .zone-chip:hover, .zone-chip.active{
+      background:var(--gold);color:var(--brown-dark);border-color:var(--gold);
+      transform:translateY(-1px);box-shadow:0 4px 12px var(--gold-glow);
+    }
+    .zone-chip.gps-chip{
+      background:rgba(90,158,111,.15);border-color:rgba(90,158,111,.3);color:#8be3a3;
+    }
+    .zone-chip.gps-chip:hover{
+      background:var(--green);color:#fff;border-color:var(--green);
+    }
+
+    #deliveryMap{
+      width:100%;height:430px;border-radius:14px;overflow:hidden;
+      border:1px solid rgba(212,162,76,.18);
+      box-shadow:inset 0 0 30px rgba(0,0,0,.8);
+      z-index:5;
+    }
+    .map-coords-bar{
+      background:rgba(12,7,3,.85);border:1px solid rgba(212,162,76,.15);
+      border-radius:10px;padding:.75rem 1rem;
+      display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;
+      font-size:.78rem;color:rgba(253,248,239,.7);gap:.5rem;
+    }
+    .map-coords-bar strong{color:var(--gold-light)}
+    .map-coords-bar a{color:var(--gold);text-decoration:none;font-weight:600}
+    .map-coords-bar a:hover{text-decoration:underline}
+
+    /* Order form card */
+    .order-card{
+      background:rgba(255,255,255,.02);
+      border:1px solid rgba(212,162,76,.15);
+      border-radius:var(--r);padding:2rem 1.75rem;
+      display:flex;flex-direction:column;justify-content:space-between;
+      box-shadow:0 20px 60px rgba(0,0,0,.4);
+    }
+    .order-card h3{
+      font-family:'Playfair Display',serif;font-size:1.35rem;color:var(--cream);
+      margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem;
+    }
+    .form-group{margin-bottom:1rem}
+    .form-label{
+      display:block;font-size:.75rem;font-weight:700;color:var(--gold-light);
+      text-transform:uppercase;letter-spacing:.08em;margin-bottom:.45rem;
+    }
+    .pack-selector{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;
+    }
+    .pack-opt{
+      background:rgba(212,162,76,.05);border:1.5px solid rgba(212,162,76,.15);
+      border-radius:12px;padding:.75rem .4rem;text-align:center;
+      cursor:pointer;transition:all .3s var(--ease);color:var(--cream);
+    }
+    .pack-opt:hover{border-color:rgba(212,162,76,.4);background:rgba(212,162,76,.1)}
+    .pack-opt.selected{
+      border-color:var(--gold);background:rgba(212,162,76,.15);
+      box-shadow:0 0 20px rgba(212,162,76,.15);
+    }
+    .pack-opt-title{font-size:.82rem;font-weight:700}
+    .pack-opt-price{font-size:.95rem;font-weight:800;color:var(--gold);margin-top:.2rem}
+
+    .pay-selector{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;
+    }
+    .pay-opt{
+      background:rgba(255,255,255,.02);border:1.5px solid rgba(212,162,76,.12);
+      border-radius:12px;padding:.65rem .3rem;text-align:center;font-size:.75rem;
+      cursor:pointer;transition:all .3s var(--ease);color:rgba(253,248,239,.8);
+    }
+    .pay-opt:hover{border-color:rgba(212,162,76,.3)}
+    .pay-opt.selected{
+      border-color:var(--gold);background:rgba(212,162,76,.12);color:var(--cream);
+      font-weight:700;
+    }
+
+    .form-input{
+      width:100%;background:rgba(12,7,3,.8);border:1px solid rgba(212,162,76,.2);
+      border-radius:10px;padding:.75rem 1rem;color:var(--cream);
+      font-family:inherit;font-size:.88rem;outline:none;
+      transition:border-color .3s;
+    }
+    .form-input:focus{border-color:var(--gold);box-shadow:0 0 12px var(--gold-glow)}
+    .form-input::placeholder{color:rgba(253,248,239,.3)}
+
+    .order-summary-box{
+      background:linear-gradient(135deg,rgba(212,162,76,.1),rgba(212,162,76,.03));
+      border:1px solid rgba(212,162,76,.25);border-radius:12px;
+      padding:1rem 1.25rem;margin:1rem 0;
+    }
+    .summary-row{
+      display:flex;justify-content:space-between;font-size:.85rem;color:rgba(253,248,239,.75);
+      margin-bottom:.35rem;gap:.5rem;
+    }
+    .summary-row.total{
+      font-size:1.15rem;font-weight:800;color:var(--cream);
+      border-top:1px solid rgba(212,162,76,.2);padding-top:.5rem;margin-top:.5rem;
+      margin-bottom:0;
+    }
+    .summary-row.total .total-amount{color:var(--gold-light)}
+
+    .btn-send-order{
+      width:100%;justify-content:center;padding:1.1rem 1.5rem;font-size:1rem;
+    }
+    .leaflet-popup-content-wrapper, .leaflet-popup-tip{
+      background:rgba(12,7,3,.95)!important;
+      color:var(--cream)!important;
+      border:1px solid rgba(212,162,76,.3)!important;
+      box-shadow:0 12px 32px rgba(0,0,0,.7)!important;
+      backdrop-filter:blur(10px);
+    }
+    .leaflet-popup-content{
+      font-family:'Inter',system-ui,sans-serif!important;
+      font-size:.85rem!important;
+      margin:10px 14px!important;
+      line-height:1.5!important;
+    }
+
+    /* ══════════════════ PEDIDOS AL MAYOR (B2B) ══════════════════ */
+    #mayoristas{
+      background:linear-gradient(180deg,#0a0704,#150d06 50%,#0c0703);
+      color:var(--cream);position:relative;overflow:hidden;
+    }
+    #mayoristas .section-title{color:var(--cream)}
+    #mayoristas .section-subtitle{color:rgba(253,248,239,.55);max-width:720px}
+
+    .mayor-benefits{
+      display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;
+      margin:2.5rem 0 3.5rem;
+    }
+    @media(max-width:960px){.mayor-benefits{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:540px){.mayor-benefits{grid-template-columns:1fr}}
+
+    .mayor-b-card{
+      background:rgba(255,255,255,.02);
+      border:1px solid rgba(212,162,76,.12);
+      border-radius:var(--r);padding:1.75rem 1.25rem;
+      transition:all .4s var(--ease);
+      position:relative;overflow:hidden;
+    }
+    .mayor-b-card:hover{
+      transform:translateY(-6px);
+      border-color:rgba(212,162,76,.35);
+      background:rgba(212,162,76,.05);
+      box-shadow:0 20px 50px rgba(0,0,0,.35),0 0 24px rgba(212,162,76,.1);
+    }
+    .mayor-b-icon{font-size:2rem;margin-bottom:.75rem}
+    .mayor-b-title{
+      font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;
+      color:var(--gold-light);margin-bottom:.4rem;
+    }
+    .mayor-b-desc{font-size:.82rem;color:rgba(253,248,239,.55);line-height:1.6}
+
+    /* Calculator & Calendar Grid */
+    .mayor-grid{
+      display:grid;grid-template-columns:1.15fr 1fr;gap:2rem;
+      align-items:stretch;
+    }
+    @media(max-width:960px){.mayor-grid{grid-template-columns:1fr}}
+
+    .calc-card{
+      background:rgba(255,255,255,.02);
+      border:1px solid rgba(212,162,76,.18);
+      border-radius:var(--r);padding:2.25rem 2rem;
+      display:flex;flex-direction:column;justify-content:space-between;
+      box-shadow:0 20px 60px rgba(0,0,0,.45);
+      position:relative;
+    }
+    .calc-card::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:3px;
+      background:linear-gradient(90deg,var(--gold),var(--gold-light),var(--gold));
+    }
+    .calc-header{margin-bottom:1.5rem}
+    .calc-header h3{
+      font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:800;
+      color:var(--cream);margin-bottom:.35rem;display:flex;align-items:center;gap:.6rem;
+    }
+    .calc-pill-box{
+      background:rgba(212,162,76,.08);border:1px solid rgba(212,162,76,.2);
+      border-radius:12px;padding:.85rem 1rem;margin-bottom:1.5rem;
+      display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;
+    }
+    .calc-pill-item{font-size:.82rem;color:rgba(253,248,239,.75)}
+    .calc-pill-item strong{color:var(--gold);font-weight:700}
+
+    /* Stepper */
+    .stepper-box{
+      background:rgba(12,7,3,.8);border:1px solid rgba(212,162,76,.25);
+      border-radius:14px;padding:1.25rem;margin-bottom:1.5rem;
+      text-align:center;
+    }
+    .stepper-label{
+      font-size:.78rem;font-weight:700;color:var(--gold-light);
+      text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem;display:block;
+    }
+    .stepper-controls{
+      display:inline-flex;align-items:center;gap:.75rem;
+      background:rgba(255,255,255,.03);border:1px solid rgba(212,162,76,.2);
+      border-radius:50px;padding:.35rem .6rem;
+    }
+    .btn-step{
+      width:40px;height:40px;border-radius:50%;
+      background:rgba(212,162,76,.15);border:1px solid rgba(212,162,76,.3);
+      color:var(--gold-light);font-size:1.4rem;font-weight:700;
+      cursor:pointer;transition:all .25s var(--ease);
+      display:flex;align-items:center;justify-content:center;
+    }
+    .btn-step:hover{
+      background:var(--gold);color:var(--brown-dark);
+      transform:scale(1.08);box-shadow:0 4px 12px var(--gold-glow);
+    }
+    .stepper-input{
+      width:80px;background:none;border:none;color:var(--cream);
+      font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:800;
+      text-align:center;outline:none;
+    }
+    .stepper-quick-btns{
+      display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:1rem;
+    }
+    .btn-quick-qty{
+      background:rgba(212,162,76,.06);border:1px solid rgba(212,162,76,.15);
+      color:rgba(253,248,239,.8);font-size:.75rem;font-weight:600;
+      padding:.3rem .75rem;border-radius:50px;cursor:pointer;
+      transition:all .25s;
+    }
+    .btn-quick-qty:hover, .btn-quick-qty.active{
+      background:var(--gold);color:var(--brown-dark);border-color:var(--gold);
+    }
+
+    /* Metric Grid */
+    .metrics-grid{
+      display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.5rem;
+    }
+    .metric-cell{
+      background:rgba(212,162,76,.04);border:1px solid rgba(212,162,76,.1);
+      border-radius:12px;padding:1rem;text-align:center;
+    }
+    .metric-cell-label{font-size:.72rem;color:rgba(253,248,239,.45);text-transform:uppercase;letter-spacing:.05em}
+    .metric-cell-val{
+      font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:800;
+      color:var(--cream);margin-top:.25rem;
+    }
+    .metric-cell.highlight{
+      background:linear-gradient(135deg,rgba(90,158,111,.15),rgba(90,158,111,.05));
+      border-color:rgba(90,158,111,.3);
+    }
+    .metric-cell.highlight .metric-cell-val{color:#8be3a3}
+    .metric-cell.main-total{
+      grid-column:span 2;
+      background:linear-gradient(135deg,rgba(212,162,76,.15),rgba(212,162,76,.03));
+      border-color:rgba(212,162,76,.3);padding:1.25rem;
+    }
+    .metric-cell.main-total .metric-cell-val{
+      font-size:2.4rem;
+      background:linear-gradient(135deg,var(--gold-light),var(--gold));
+      -webkit-background-clip:text;background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+
+    /* Calendar & Schedule Card */
+    .schedule-card{
+      background:rgba(255,255,255,.02);
+      border:1px solid rgba(212,162,76,.18);
+      border-radius:var(--r);padding:2.25rem 2rem;
+      display:flex;flex-direction:column;justify-content:space-between;
+      box-shadow:0 20px 60px rgba(0,0,0,.45);
+    }
+    .schedule-card h3{
+      font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:800;
+      color:var(--cream);margin-bottom:.5rem;display:flex;align-items:center;gap:.6rem;
+    }
+    .date-input-group{
+      background:rgba(12,7,3,.8);border:1px solid rgba(212,162,76,.25);
+      border-radius:12px;padding:.85rem 1rem;margin-bottom:1rem;
+    }
+    .date-input-group input[type="date"]{
+      width:100%;background:none;border:none;color:var(--cream);
+      font-family:inherit;font-size:1rem;font-weight:600;outline:none;
+      color-scheme:dark;
+    }
+    .slot-selector{
+      display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1rem;
+    }
+    .slot-opt{
+      background:rgba(255,255,255,.02);border:1.5px solid rgba(212,162,76,.15);
+      border-radius:10px;padding:.65rem .5rem;text-align:center;
+      cursor:pointer;font-size:.78rem;color:rgba(253,248,239,.8);transition:all .25s;
+    }
+    .slot-opt:hover{border-color:rgba(212,162,76,.4)}
+    .slot-opt.selected{
+      border-color:var(--gold);background:rgba(212,162,76,.15);color:var(--cream);
+      font-weight:700;
+    }
+    .sheets-badge{
+      display:inline-flex;align-items:center;gap:.5rem;
+      background:rgba(90,158,111,.1);border:1px solid rgba(90,158,111,.25);
+      color:#8be3a3;font-size:.72rem;font-weight:600;padding:.3rem .75rem;
+      border-radius:50px;margin-bottom:1rem;
+    }
+    .order-status-msg{
+      display:none;padding:.85rem 1rem;border-radius:10px;font-size:.85rem;
+      margin-top:1rem;text-align:center;line-height:1.5;
+    }
+    .order-status-msg.success{
+      display:block;background:rgba(90,158,111,.15);border:1px solid rgba(90,158,111,.3);
+      color:#a8f0be;
+    }
+    .order-status-msg.loading{
+      display:block;background:rgba(212,162,76,.15);border:1px solid rgba(212,162,76,.3);
+      color:var(--gold-light);
+    }
+
+    /* ══════════════════ MODAL DE MAPA B2B ══════════════════ */
+    .address-input-wrapper{
+      display:flex;gap:.5rem;align-items:stretch;position:relative;
+    }
+    .btn-open-map-modal{
+      background:rgba(212,162,76,.15);border:1px solid rgba(212,162,76,.35);
+      color:var(--gold-light);border-radius:10px;padding:0 1.1rem;font-size:.82rem;
+      font-weight:700;display:inline-flex;align-items:center;gap:.4rem;
+      cursor:pointer;white-space:nowrap;transition:all .25s var(--ease);
+      font-family:inherit;
+    }
+    .btn-open-map-modal:hover{
+      background:var(--gold);color:var(--brown-dark);border-color:var(--gold);
+      box-shadow:0 0 16px var(--gold-glow);
+    }
+    .b2b-modal-overlay{
+      position:fixed;top:0;left:0;width:100%;height:100%;
+      background:rgba(0,0,0,.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+      z-index:99999;display:none;align-items:center;justify-content:center;
+      padding:1rem;opacity:0;transition:opacity .3s var(--ease);
+    }
+    .b2b-modal-overlay.active{
+      display:flex;opacity:1;
+    }
+    .b2b-modal-card{
+      background:linear-gradient(180deg,#150d06,#0d0703);
+      border:1.5px solid rgba(212,162,76,.35);
+      border-radius:20px;width:100%;max-width:840px;max-height:92vh;
+      display:flex;flex-direction:column;overflow:hidden;
+      box-shadow:0 25px 80px rgba(0,0,0,.85), 0 0 40px rgba(212,162,76,.18);
+      transform:scale(.95);transition:transform .3s var(--ease);
+    }
+    .b2b-modal-overlay.active .b2b-modal-card{
+      transform:scale(1);
+    }
+    .b2b-modal-header{
+      padding:1.2rem 1.5rem;display:flex;justify-content:space-between;align-items:center;
+      border-bottom:1px solid rgba(212,162,76,.15);background:rgba(212,162,76,.05);
+    }
+    .b2b-modal-header h3{
+      font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;
+      color:var(--cream);display:flex;align-items:center;gap:.5rem;margin:0;
+    }
+    .b2b-modal-close{
+      background:rgba(255,255,255,.05);border:1px solid rgba(212,162,76,.2);
+      color:rgba(253,248,239,.8);width:36px;height:36px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;font-size:1.2rem;
+      cursor:pointer;transition:all .25s;line-height:1;
+    }
+    .b2b-modal-close:hover{
+      background:var(--gold);color:var(--brown-dark);border-color:var(--gold);
+    }
+    .b2b-modal-body{
+      padding:1.25rem 1.5rem;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:.85rem;
+    }
+    #b2bModalMap{
+      width:100%;height:380px;border-radius:14px;
+      border:1.5px solid rgba(212,162,76,.25);overflow:hidden;
+      box-shadow:inset 0 2px 10px rgba(0,0,0,.5);
+    }
+    .b2b-modal-footer{
+      padding:1.1rem 1.5rem;border-top:1px solid rgba(212,162,76,.15);
+      background:rgba(10,6,2,.9);display:flex;justify-content:space-between;
+      align-items:center;gap:1rem;flex-wrap:wrap;
+    }
+
+    /* ══════════════════ FAQ ══════════════════ */
+    #faq{
+      background:linear-gradient(180deg,#0a0704,#120904);
+      color:var(--cream);
+    }
+    #faq .section-title{color:var(--cream)}
+    .faq-list{max-width:760px;margin:0 auto}
+    .faq-item{
+      border-bottom:1px solid rgba(212,162,76,.08);
+    }
+    .faq-question{
+      width:100%;background:none;border:none;
+      padding:1.5rem 0;font-size:1.05rem;font-weight:600;
+      color:var(--cream);text-align:left;cursor:pointer;
+      display:flex;justify-content:space-between;align-items:center;gap:1rem;
+      font-family:inherit;transition:color .3s;
+    }
+    .faq-question:hover{color:var(--gold)}
+    .faq-icon{
+      flex-shrink:0;width:32px;height:32px;border-radius:50%;
+      background:rgba(212,162,76,.08);border:1.5px solid rgba(212,162,76,.2);
+      display:flex;align-items:center;justify-content:center;
+      font-size:.9rem;color:var(--gold);transition:all .35s var(--ease);
+    }
+    .faq-item.open .faq-icon{
+      background:var(--gold);color:var(--brown-dark);
+      transform:rotate(45deg);border-color:var(--gold);
+    }
+    .faq-answer{
+      max-height:0;overflow:hidden;
+      transition:max-height .5s var(--ease),padding .5s var(--ease);
+    }
+    .faq-item.open .faq-answer{max-height:300px;padding-bottom:1.5rem}
+    .faq-answer p{font-size:.95rem;color:rgba(253,248,239,.55);line-height:1.8}
+
+    /* ══════════════════ FOOTER ══════════════════ */
+    footer{
+      background:#050302;color:rgba(253,248,239,.35);
+      text-align:center;padding:4rem 2rem;
+      border-top:1px solid rgba(212,162,76,.06);
+    }
+    .footer-brand{
+      font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:800;
+      background:linear-gradient(135deg,var(--gold-light),var(--gold));
+      -webkit-background-clip:text;background-clip:text;
+      -webkit-text-fill-color:transparent;
+      margin-bottom:.5rem;
+    }
+    footer p{font-size:.85rem;line-height:1.7}
+    footer a{
+      color:var(--gold);text-decoration:none;
+      transition:opacity .3s;
+    }
+    footer a:hover{opacity:.7}
+    .footer-links{
+      display:flex;gap:1.5rem;justify-content:center;margin-top:1.25rem;
+    }
+    .footer-links a{
+      display:inline-flex;align-items:center;gap:.4rem;
+      padding:.5rem 1.25rem;border-radius:50px;
+      border:1px solid rgba(212,162,76,.12);
+      font-size:.85rem;transition:all .3s;
+    }
+    .footer-links a:hover{border-color:var(--gold);background:rgba(212,162,76,.06)}
+
+    /* ══════════════════ SCROLL REVEAL ══════════════════ */
+    .reveal{
+      opacity:0;transform:translateY(40px);
+      transition:opacity .8s var(--ease),transform .8s var(--ease);
+    }
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    .reveal-delay-1{transition-delay:.1s}
+    .reveal-delay-2{transition-delay:.2s}
+    .reveal-delay-3{transition-delay:.3s}
+
+    /* ══════════════════ SCROLL-TO-TOP ══════════════════ */
+    .scroll-top{
+      position:fixed;bottom:2rem;right:2rem;z-index:999;
+      width:48px;height:48px;border-radius:50%;
+      background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+      color:var(--brown-dark);border:none;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.1rem;font-weight:800;
+      box-shadow:0 4px 20px var(--gold-glow);
+      opacity:0;transform:translateY(20px) scale(.8);
+      transition:all .4s var(--ease);
+    }
+    .scroll-top.visible{opacity:1;transform:translateY(0) scale(1)}
+    .scroll-top:hover{transform:translateY(-3px) scale(1.05)}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+  </style>
+</head>
+<body>
+
+  <!-- ═══ NAVIGATION ═══ -->
+  <nav class="nav" id="mainNav">
+    <div class="nav-inner">
+      <a href="#" class="nav-brand">Puerco <span class="ampersand">&</span> Puerca</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#producto">Producto</a></li>
+        <li><a href="#porque">¿Por qué?</a></li>
+        <li><a href="#cocina">Cocina</a></li>
+        <li><a href="#delivery">Delivery</a></li>
+        <li><a href="#mayoristas">Al Mayor</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="https://wa.me/584144244920?text=Hola!%20Quiero%20pedir%20Manteca%20Puerco%20y%20Puerca" target="_blank" class="nav-cta">Pedir ahora</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ═══ VIDEO HERO — CANVAS SCRUB ═══ -->
+  <div class="video-hero-wrapper" id="videoWrapper">
+    <div class="video-hero-sticky">
+      <canvas id="heroCanvas"></canvas>
+      <div class="video-overlay"></div>
+      <div class="scroll-progress" id="scrollProgress"></div>
+
+      <!-- Panel 1: Hero -->
+      <div class="video-text-panel vtp-glass panel-center" id="vpanel1">
+        <p class="vtp-label">Manteca Artesanal 100% Natural</p>
+        <h1 class="vtp-title">Cocina con <span class="gold">sabor real</span></h1>
+        <p class="vtp-body">El secreto artesanal de la cocina venezolana. Sin químicos, sin conservantes, sin excusas.</p>
+      </div>
+
+      <!-- Panel 2: Product -->
+      <div class="video-text-panel vtp-glass panel-left" id="vpanel2">
+        <p class="vtp-label">Puro & Artesanal</p>
+        <h2 class="vtp-title" style="font-size:clamp(1.4rem,3vw,2.2rem)">Frasco de vidrio<br><span class="gold">500 g</span></h2>
+        <p class="vtp-body">Elaborada lentamente para conservar cada nutriente y el sabor inconfundible de la tradición.</p>
+      </div>
+
+      <!-- Panel 3: CTA -->
+      <div class="video-text-panel vtp-accent panel-right" id="vpanel3">
+        <p class="vtp-label">Precio justo</p>
+        <h2 class="vtp-title" style="font-size:clamp(1.5rem,3.5vw,2.4rem)">Solo <span class="gold">$5</span></h2>
+        <p class="vtp-body">Delivery en Valencia, San Diego, Naguanagua y Los Guayos.</p>
+        <a href="https://wa.me/584144244920?text=Hola!%20Quiero%20pedir%20Manteca%20Puerco%20y%20Puerca" target="_blank" class="btn btn-primary" style="margin-top:1.25rem;font-size:.9rem">📦 Haz tu pedido</a>
+      </div>
+
+      <!-- Panel 4: Scroll down -->
+      <div class="video-text-panel vtp-glass panel-bottom" id="vpanel4">
+        <p class="vtp-body" style="font-size:1.1rem">Descubre por qué miles de familias ya cocinan con <strong style="color:var(--gold-light)">Puerco y Puerca</strong></p>
+        <div style="margin-top:.75rem;font-size:1.5rem;opacity:.5;animation:bounce 2s infinite">↓</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ INICIO ═══ -->
+  <section id="inicio">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="section-inner">
+      <div class="reveal">
+        <span class="hero-badge">🐷 100% Natural · Artesanal</span>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <p class="section-label">Manteca de Puerco Premium</p>
+        <h2 class="section-title" style="color:var(--cream)">Cocina con salud<br>y <em style="color:var(--gold)">sabor real</em></h2>
+        <p class="section-subtitle" style="margin:0 auto 1rem;color:rgba(253,248,239,.55)">El ingrediente que tu cocina necesita. Sin químicos, sin conservantes — solo pura manteca de cerdo artesanal en frasco de vidrio de 500 g.</p>
+      </div>
+      <div class="hero-jar-preview reveal reveal-delay-2">
+        <img src="frasco-3d.jpg" alt="Frasco 500g Manteca Puerco y Puerca" class="hero-jar-img">
+      </div>
+      <div class="reveal reveal-delay-2">
+        <div class="hero-price">
+          <span class="currency">$</span>
+          <span class="amount">5</span>
+          <span class="unit">/ frasco 500 g</span>
+        </div>
+      </div>
+      <div class="hero-buttons reveal reveal-delay-3">
+        <a href="https://wa.me/584144244920?text=Hola!%20Quiero%20pedir%20Manteca%20Puerco%20y%20Puerca" target="_blank" class="btn btn-primary" style="font-size:1.1rem">🛒 Pedir ahora</a>
+        <a href="#producto" class="btn btn-outline">Conocer más →</a>
+      </div>
+      <div class="hero-trust reveal">
+        <div class="trust-item"><span class="num">100%</span><span class="label">Natural</span></div>
+        <div class="trust-item"><span class="num">500g</span><span class="label">Por frasco</span></div>
+        <div class="trust-item"><span class="num">0</span><span class="label">Químicos</span></div>
+        <div class="trust-item"><span class="num">$5</span><span class="label">Precio justo</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ NUESTRO PRODUCTO ═══ -->
+  <section id="producto">
+    <div class="section-inner">
+      <div class="product-grid">
+        <div class="product-visual reveal">
+          <div class="product-render-box">
+            <img src="frasco-3d.jpg" alt="Frasco 500g Manteca de Puerco y Puerca" class="product-render-img">
+            <div class="product-render-badge">500 g · Vidrio Premium</div>
+          </div>
+          <p class="product-visual-label">Frasco de vidrio reciclable</p>
+          <p class="product-visual-title">500 g de Manteca Pura</p>
+        </div>
+        <div>
+          <div class="reveal">
+            <p class="section-label">Nuestro Producto</p>
+            <h2 class="section-title" style="color:var(--cream)">Pureza que se<br>nota al cocinar</h2>
+          </div>
+          <ul class="product-detail-list">
+            <li class="reveal">
+              <div class="detail-icon">🫙</div>
+              <div class="detail-text">
+                <h4>Envase de Vidrio 500 g</h4>
+                <p>Preserva la frescura y el sabor. 100% reutilizable y ecológico.</p>
+              </div>
+            </li>
+            <li class="reveal reveal-delay-1">
+              <div class="detail-icon">🌿</div>
+              <div class="detail-text">
+                <h4>100% Natural — Cero Química</h4>
+                <p>Proceso artesanal lento. Sin aditivos, sin conservantes, sin hidrogenación.</p>
+              </div>
+            </li>
+            <li class="reveal reveal-delay-2">
+              <div class="detail-icon">🧊</div>
+              <div class="detail-text">
+                <h4>Conservación Fácil</h4>
+                <p>Dura meses a temperatura ambiente. No requiere refrigeración.</p>
+              </div>
+            </li>
+            <li class="reveal reveal-delay-3">
+              <div class="detail-icon">📦</div>
+              <div class="detail-text">
+                <h4>Empaque Seguro</h4>
+                <p>Protegido con cuidado para llegar intacto a tu puerta.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="packs-section">
+        <div class="reveal" style="text-align:center">
+          <p class="section-label" style="justify-content:center">
+            <span style="display:none">.</span>Packs de Ahorro</p>
+          <h3 style="font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--cream);margin-bottom:.5rem">Más frascos, mejor precio</h3>
+          <p style="color:rgba(253,248,239,.4);margin-bottom:0;font-size:.95rem">Elige el pack que se adapte a tu cocina</p>
+        </div>
+        <div class="packs">
+          <div class="pack-card reveal">
+            <div class="pack-render-box">
+              <img src="frasco-3d.jpg" alt="1 Frasco de manteca" class="pack-img">
+            </div>
+            <div class="pack-name">1 Frasco</div>
+            <div class="pack-price">$5</div>
+            <p style="font-size:.8rem;color:rgba(253,248,239,.35);margin-top:.35rem">Ideal para probar</p>
+          </div>
+          <div class="pack-card popular reveal reveal-delay-1">
+            <div class="pack-badge">⭐ Más vendido</div>
+            <div class="pack-render-box pack-render-duo">
+              <img src="frasco-3d.jpg" alt="Frasco 1" class="pack-img duo-left">
+              <img src="frasco-3d.jpg" alt="Frasco 2" class="pack-img duo-right">
+            </div>
+            <div class="pack-name">2 Frascos</div>
+            <div class="pack-price">$9</div>
+            <div class="pack-save">Ahorras $1</div>
+          </div>
+          <div class="pack-card reveal reveal-delay-2">
+            <div class="pack-render-box pack-render-quad">
+              <img src="frasco-3d.jpg" alt="Pack de 4 frascos" class="pack-img quad-main">
+              <span class="pack-badge-qty">Pack ×4</span>
+            </div>
+            <div class="pack-name">4 Frascos</div>
+            <div class="pack-price">$17</div>
+            <div class="pack-save">Ahorras $3</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ ¿POR QUÉ MANTECA? ═══ -->
+  <section id="porque">
+    <div class="section-inner">
+      <div class="reveal">
+        <p class="section-label">¿Por qué Manteca?</p>
+        <h2 class="section-title">Derribemos los mitos<br>sobre la grasa</h2>
+        <p class="section-subtitle">La ciencia moderna respalda lo que tu abuela siempre supo: la manteca natural es más saludable que los aceites industriales.</p>
+      </div>
+      <div class="compare-wrapper reveal">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Característica</th>
+              <th>🐷 Puerco y Puerca</th>
+              <th>🏭 Aceites Industriales</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Punto de humo</td><td class="check">✓ ~190 °C — Ideal para freír</td><td class="cross">✗ Variable, se degradan</td></tr>
+            <tr><td>Grasas trans</td><td class="check">✓ Cero — 100% natural</td><td class="cross">✗ Presentes (hidrogenación)</td></tr>
+            <tr><td>Químicos</td><td class="check">✓ Ninguno — Artesanal</td><td class="cross">✗ Hexano y solventes</td></tr>
+            <tr><td>Salud cardiovascular</td><td class="check">✓ Grasa monoinsaturada (oleico)</td><td class="cross">✗ Alto omega-6 inflamatorio</td></tr>
+            <tr><td>Sabor</td><td class="check">✓ Potencia el sabor natural</td><td>Neutro o rancio</td></tr>
+            <tr><td>Absorción al freír</td><td class="check">✓ Baja — Comida crujiente</td><td class="cross">✗ Alta — Comida grasosa</td></tr>
+            <tr><td>Vitaminas</td><td class="check">✓ Rica en vitamina D</td><td>Artificialmente fortificados</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ EN TU COCINA ═══ -->
+  <section id="cocina">
+    <div class="section-inner">
+      <div class="reveal">
+        <p class="section-label">En tu Cocina</p>
+        <h2 class="section-title">Versatilidad que<br><em style="color:var(--gold)">enamora</em></h2>
+        <p class="section-subtitle">Desde el desayuno hasta la cena, la manteca eleva cada plato a otro nivel.</p>
+      </div>
+      <div class="recipe-grid">
+        <div class="recipe-card reveal"><div class="recipe-emoji">🍌</div><div class="recipe-name">Tajadas Doradas</div><p class="recipe-desc">Crujientes por fuera, suaves por dentro. Menos aceite absorbido que con cualquier otro medio.</p></div>
+        <div class="recipe-card reveal reveal-delay-1"><div class="recipe-emoji">🫓</div><div class="recipe-name">Arepas Perfectas</div><p class="recipe-desc">Una cucharada en la masa y logras arepas doradas con textura inigualable.</p></div>
+        <div class="recipe-card reveal reveal-delay-2"><div class="recipe-emoji">🍲</div><div class="recipe-name">Guisos Criollos</div><p class="recipe-desc">Base aromática para sofritos y guisos con sabor auténtico de casa.</p></div>
+        <div class="recipe-card reveal reveal-delay-3"><div class="recipe-emoji">🫘</div><div class="recipe-name">Caraotas Negras</div><p class="recipe-desc">El toque secreto de la abuela. Una cucharada transforma el plato.</p></div>
+        <div class="recipe-card reveal"><div class="recipe-emoji">🧁</div><div class="recipe-name">Repostería Artesanal</div><p class="recipe-desc">Cortezas hojaldradas, galletas crujientes y tortas con miga incomparable.</p></div>
+        <div class="recipe-card reveal reveal-delay-1"><div class="recipe-emoji">🥘</div><div class="recipe-name">Hallacas y Tamales</div><p class="recipe-desc">El ingrediente tradicional que le da la textura perfecta al guiso.</p></div>
+      </div>
+
+      <div class="tips-box reveal">
+        <h3>💡 Tips de cocina pro</h3>
+        <ul class="tips-list">
+          <li>Calienta a fuego medio para aprovechar su alto punto de humo</li>
+          <li>Usa poca cantidad: rinde más que los aceites convencionales</li>
+          <li>Ideal para freír: comida dorada sin absorber grasa de más</li>
+          <li>Guárdala a temperatura ambiente, tapada, lejos de la luz</li>
+          <li>Mezcla con aceite de oliva para un sofrito gourmet</li>
+          <li>Perfecta para sellar carnes: crea una costra crujiente</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ DELIVERY Y PEDIDOS (Interactive Map) ═══ -->
+  <section id="delivery">
+    <div class="section-inner">
+      <div class="reveal">
+        <p class="section-label">Delivery &amp; Pedidos Inmediatos</p>
+        <h2 class="section-title" style="color:var(--cream)">Elige tu ubicación en el mapa<br>y recibe directo en tu puerta</h2>
+        <p class="section-subtitle">Toca o arrastra el marcador en el mapa para fijar tu punto de entrega en Valencia, San Diego, Naguanagua o Los Guayos. Tu pedido llegará con tu ubicación exacta pre-cargada.</p>
+      </div>
+
+      <div class="delivery-wrapper">
+        <!-- Mapa interactivo -->
+        <div class="map-card reveal">
+          <div class="map-header">
+            <h3>📍 Google Maps — Valencia &amp; Carabobo</h3>
+            <div class="zone-chips">
+              <span class="zone-chip active" id="layerRoadBtn">🗺️ Google Calles</span>
+              <span class="zone-chip" id="layerSatBtn">🛰️ Google Satélite</span>
+              <span class="zone-chip" data-lat="10.2200" data-lng="-67.9900" data-name="Norte de Valencia">Valencia Norte</span>
+              <span class="zone-chip" data-lat="10.2541" data-lng="-67.9540" data-name="San Diego">San Diego</span>
+              <span class="zone-chip" data-lat="10.2520" data-lng="-68.0120" data-name="Naguanagua">Naguanagua</span>
+              <span class="zone-chip" data-lat="10.1870" data-lng="-67.9350" data-name="Los Guayos">Los Guayos</span>
+              <span class="zone-chip gps-chip" id="gpsBtn">🎯 Mi GPS</span>
+            </div>
+          </div>
+
+          <div id="deliveryMap"></div>
+
+          <div class="map-coords-bar">
+            <div>
+              <span>Punto seleccionado:</span>
+              <strong id="displayCoords">10.2200, -67.9900</strong>
+              <span style="color:var(--gold);margin-left:.5rem;" id="displayZone">(Norte de Valencia)</span>
+            </div>
+            <a href="https://maps.google.com/?q=10.2200,-67.9900" target="_blank" id="mapsLinkPreview">🗺️ Abrir en Google Maps</a>
+          </div>
+        </div>
+
+        <!-- Consola de Pedido para WhatsApp -->
+        <div class="order-card reveal reveal-delay-1">
+          <div>
+            <h3>🛍️ Tu Pedido</h3>
+
+            <!-- Selector de Pack -->
+            <div class="form-group">
+              <label class="form-label">1. Selecciona tu Cantidad</label>
+              <div class="pack-selector">
+                <div class="pack-opt" data-qty="1 Frasco (500 g)" data-price="5">
+                  <div class="pack-opt-title">1 Frasco</div>
+                  <div class="pack-opt-price">$5</div>
+                </div>
+                <div class="pack-opt selected" data-qty="2 Frascos (Ahorro)" data-price="9">
+                  <div class="pack-opt-title">2 Frascos ⭐</div>
+                  <div class="pack-opt-price">$9</div>
+                </div>
+                <div class="pack-opt" data-qty="4 Frascos (Familiar)" data-price="17">
+                  <div class="pack-opt-title">4 Frascos</div>
+                  <div class="pack-opt-price">$17</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Selector de Pago -->
+            <div class="form-group">
+              <label class="form-label">2. Método de Pago</label>
+              <div class="pay-selector">
+                <div class="pay-opt selected" data-pay="Pago Móvil">📱 Pago Móvil</div>
+                <div class="pay-opt" data-pay="Efectivo">💵 Efectivo</div>
+                <div class="pay-opt" data-pay="USDT / Binance">💰 USDT / Cripto</div>
+              </div>
+            </div>
+
+            <!-- Datos adicionales -->
+            <div class="form-group">
+              <label class="form-label">3. Tu Nombre</label>
+              <input type="text" id="custName" class="form-input" placeholder="Ej. Carlos Mendoza">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">4. Dirección o Punto de Referencia</label>
+              <input type="text" id="custAddress" class="form-input" placeholder="Ej. Urb. El Trigal, Res. Los Samanes, Apto 4B">
+            </div>
+
+            <!-- Resumen -->
+            <div class="order-summary-box">
+              <div class="summary-row">
+                <span>Producto:</span>
+                <strong id="sumProduct">2 Frascos (Ahorro)</strong>
+              </div>
+              <div class="summary-row">
+                <span>Pago:</span>
+                <strong id="sumPay">Pago Móvil</strong>
+              </div>
+              <div class="summary-row">
+                <span>Ubicación:</span>
+                <strong id="sumLocation">Norte de Valencia</strong>
+              </div>
+              <div class="summary-row total">
+                <span>Total a pagar:</span>
+                <span class="total-amount" id="sumTotal">$9</span>
+              </div>
+            </div>
+          </div>
+
+          <a href="#" id="sendOrderBtn" target="_blank" class="btn btn-whatsapp btn-send-order">
+            🛵 Enviar Pedido y Ubicación por WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PEDIDOS AL MAYOR (B2B) ═══ -->
+  <section id="mayoristas">
+    <div class="section-inner">
+      <div class="reveal" style="text-align:center">
+        <span class="hero-badge" style="margin-bottom:1rem">🏢 Venta Directa B2B & Gastronómica</span>
+        <h2 class="section-title">Precios al Mayor para <span class="gold">Comercios & Restaurantes</span></h2>
+        <p class="section-subtitle" style="margin:0 auto 1.5rem">
+          Maximiza tu rentabilidad y eleva el nivel de tus preparaciones con manteca 100% pura y artesanal.
+          Presentación profesional en cajas de 12 unidades (500 g c/u) con entregas programadas en tu local.
+        </p>
+      </div>
+
+      <!-- Ventajas Comerciales B2B -->
+      <div class="mayor-benefits">
+        <div class="mayor-b-card reveal">
+          <div class="mayor-b-icon">💰</div>
+          <div class="mayor-b-title">+31.6% de Margen</div>
+          <div class="mayor-b-desc">
+            Costo preferencial de <strong>$3,80 por frasco</strong>. Al revender al precio sugerido de $5,00 obtienes <strong>$14,40 netos de ganancia</strong> por cada caja.
+          </div>
+        </div>
+
+        <div class="mayor-b-card reveal reveal-delay-1">
+          <div class="mayor-b-icon">🍳</div>
+          <div class="mayor-b-title">Doble Rendimiento</div>
+          <div class="mayor-b-desc">
+            Alto punto de humo (~200°C). No se oxida ni se quema rápido como los aceites vegetales, se absorbe un 30% menos en frituras y abarata costos en tu cocina.
+          </div>
+        </div>
+
+        <div class="mayor-b-card reveal reveal-delay-2">
+          <div class="mayor-b-icon">📦</div>
+          <div class="mayor-b-title">Caja Sellada ×12</div>
+          <div class="mayor-b-desc">
+            Embalaje corrugado reforzado con 12 frascos de vidrio de 500 g sellados de fábrica. Fácil almacenamiento, apilado y rotación segura de inventario.
+          </div>
+        </div>
+
+        <div class="mayor-b-card reveal reveal-delay-3">
+          <div class="mayor-b-icon">🗓️</div>
+          <div class="mayor-b-title">Entregas Programadas</div>
+          <div class="mayor-b-desc">
+            Agenda tu fecha de recepción en el calendario. Despachos directos a tu puerta en Carabobo y envíos asegurados al resto del país.
+          </div>
+        </div>
+      </div>
+
+      <!-- Calculadora de Cajas y Calendario B2B -->
+      <div class="mayor-grid">
+        
+        <!-- Columna 1: Calculadora Interactiva de Cajas -->
+        <div class="calc-card reveal">
+          <div>
+            <div class="calc-header">
+              <h3>🧮 Calculadora de Inversión al Mayor</h3>
+              <p style="font-size:.85rem;color:rgba(253,248,239,.6);margin-top:.25rem">
+                Selecciona la cantidad de cajas y calcula en tiempo real tu costo, unidades y margen de ganancia.
+              </p>
+            </div>
+
+            <div class="calc-pill-box">
+              <div class="calc-pill-item">📦 <strong>1 Caja = 12 Frascos (500 g)</strong></div>
+              <div class="calc-pill-item">🏷️ <strong>$3,80 / frasco</strong></div>
+              <div class="calc-pill-item">💵 <strong>$45,60 / caja</strong></div>
+            </div>
+
+            <!-- Stepper de Cajas -->
+            <div class="stepper-box">
+              <label class="stepper-label" for="boxQtyInput">Número de Cajas a Solicitar</label>
+              <div class="stepper-controls">
+                <button type="button" class="btn-step" id="btnMinusBox" aria-label="Disminuir cajas">−</button>
+                <input type="number" id="boxQtyInput" class="stepper-input" value="2" min="1" max="500" step="1">
+                <button type="button" class="btn-step" id="btnPlusBox" aria-label="Aumentar cajas">+</button>
+              </div>
+              <div class="stepper-quick-btns">
+                <button type="button" class="btn-quick-qty" data-boxes="1">1 Caja (12 un)</button>
+                <button type="button" class="btn-quick-qty active" data-boxes="2">2 Cajas (24 un)</button>
+                <button type="button" class="btn-quick-qty" data-boxes="5">5 Cajas (60 un)</button>
+                <button type="button" class="btn-quick-qty" data-boxes="10">10 Cajas (120 un)</button>
+                <button type="button" class="btn-quick-qty" data-boxes="20">20 Cajas (240 un)</button>
+              </div>
+            </div>
+
+            <!-- Métricas Dinámicas -->
+            <div class="metrics-grid">
+              <div class="metric-cell main-total">
+                <div class="metric-cell-label">Total Inversión al Mayor</div>
+                <div class="metric-cell-val" id="metricTotalCost">$91.20</div>
+                <div style="font-size:.78rem;color:rgba(253,248,239,.55);margin-top:.3rem">
+                  Precio fijo de $45,60 por caja sellada (12 frascos)
+                </div>
+              </div>
+
+              <div class="metric-cell">
+                <div class="metric-cell-label">Frascos Totales</div>
+                <div class="metric-cell-val" id="metricUnits">24 un</div>
+              </div>
+
+              <div class="metric-cell">
+                <div class="metric-cell-label">Costo x Frasco</div>
+                <div class="metric-cell-val" id="metricUnitPrice" style="color:var(--gold-light)">$3.80</div>
+              </div>
+
+              <div class="metric-cell">
+                <div class="metric-cell-label">Valor en Reventa ($5/u)</div>
+                <div class="metric-cell-val" id="metricResale">$120.00</div>
+              </div>
+
+              <div class="metric-cell highlight">
+                <div class="metric-cell-label">Margen / Ahorro Neto</div>
+                <div class="metric-cell-val" id="metricProfit">+$28.80</div>
+                <span style="font-size:.7rem;font-weight:700;color:#8be3a3">+31.6% utilidad</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="font-size:.8rem;color:rgba(253,248,239,.5);line-height:1.6;border-top:1px solid rgba(212,162,76,.1);padding-top:1rem;margin-top:1rem">
+            💡 <em>Para compras continuas de más de 50 cajas o distribución regional exclusiva, contamos con acuerdos especiales y despacho prioritario.</em>
+          </div>
+        </div>
+
+        <!-- Columna 2: Calendario y Formulario de Despacho (Google Sheets) -->
+        <div class="schedule-card reveal reveal-delay-1">
+          <div>
+            <h3>📅 Programar Pedido & Despacho</h3>
+            <div class="sheets-badge">
+              <span>🟢</span> Conectado a Google Sheets & Notificación por Correo
+            </div>
+
+            <form id="b2bOrderForm" onsubmit="return false;">
+              
+              <!-- Fecha en Calendario -->
+              <div class="form-group">
+                <label class="form-label" for="b2bDeliveryDate">1. Fecha Deseada de Despacho / Entrega *</label>
+                <div class="date-input-group">
+                  <input type="date" id="b2bDeliveryDate" required>
+                </div>
+                <small style="font-size:.72rem;color:rgba(253,248,239,.45)">Selecciona el día en el calendario para recibir tu despacho.</small>
+              </div>
+
+              <!-- Horario preferido -->
+              <div class="form-group">
+                <label class="form-label">2. Turno de Entrega Preferido</label>
+                <div class="slot-selector">
+                  <div class="slot-opt selected" data-slot="Mañana (8:00 AM - 12:00 PM)">
+                    ☀️ Mañana<br><small style="opacity:.7;font-size:.7rem">8:00am - 12:00pm</small>
+                  </div>
+                  <div class="slot-opt" data-slot="Tarde (1:00 PM - 5:00 PM)">
+                    🌤️ Tarde<br><small style="opacity:.7;font-size:.7rem">1:00pm - 5:00pm</small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Datos del Negocio -->
+              <div class="form-group">
+                <label class="form-label" for="b2bBizName">3. Nombre del Negocio / Razón Social *</label>
+                <input type="text" id="b2bBizName" class="form-input" placeholder="Ej. Restaurante Doña Rosa / Arepera Central / Bodegón San Diego" required>
+              </div>
+
+              <div class="form-group" style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">
+                <div>
+                  <label class="form-label" for="b2bContactName">Persona Contacto *</label>
+                  <input type="text" id="b2bContactName" class="form-input" placeholder="Ej. Carlos Méndez" required>
+                </div>
+                <div>
+                  <label class="form-label" for="b2bPhone">WhatsApp / Teléfono *</label>
+                  <input type="tel" id="b2bPhone" class="form-input" placeholder="Ej. 0414-1234567" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="b2bEmail">Correo Electrónico (para confirmación) *</label>
+                <input type="email" id="b2bEmail" class="form-input" placeholder="compras@tunegocio.com" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="b2bAddress">Dirección del Local & Municipio *</label>
+                <div class="address-input-wrapper">
+                  <input type="text" id="b2bAddress" class="form-input" placeholder="Toca aquí o en el botón para ubicar en Google Maps" readonly required style="cursor:pointer;background:rgba(12,7,3,.95)">
+                  <button type="button" id="btnOpenB2BMap" class="btn-open-map-modal" aria-label="Abrir mapa de Google Maps">
+                    📍 Fijar en Mapa
+                  </button>
+                </div>
+                <div id="b2bAddressConfirmedPreview" style="display:none;margin-top:.45rem;font-size:.78rem;color:#8be3a3;line-height:1.4">
+                  <span>📍 <strong>Ubicación fijada:</strong></span> <span id="b2bAddressTextPreview"></span>
+                  <a href="#" target="_blank" id="b2bMapsLinkPreview" style="color:var(--gold);margin-left:.4rem;text-decoration:underline;font-weight:600">Ver en Google Maps</a>
+                </div>
+                <small style="font-size:.72rem;color:rgba(253,248,239,.45);margin-top:.25rem;display:block">
+                  Selecciona tu local manualmente en Google Maps o con GPS automático.
+                </small>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="b2bNotes">Notas Especiales / Facturación</label>
+                <input type="text" id="b2bNotes" class="form-input" placeholder="Ej. Requiere factura fiscal / Horario especial de recepción">
+              </div>
+
+              <!-- Resumen Dinámico -->
+              <div class="order-summary-box" style="margin-top:.75rem">
+                <div class="summary-row">
+                  <span>Volumen al Mayor:</span>
+                  <strong id="b2bSumBoxes">2 Cajas (24 Frascos de 500g)</strong>
+                </div>
+                <div class="summary-row">
+                  <span>Fecha Agendada:</span>
+                  <strong id="b2bSumDate">Por seleccionar</strong>
+                </div>
+                <div class="summary-row">
+                  <span>Turno:</span>
+                  <strong id="b2bSumSlot">Mañana (8:00 AM - 12:00 PM)</strong>
+                </div>
+                <div class="summary-row total">
+                  <span>Total a Pagar ($):</span>
+                  <span class="total-amount" id="b2bSumTotal">$91.20</span>
+                </div>
+              </div>
+
+              <!-- Mensaje de Estado / Notificación -->
+              <div class="order-status-msg" id="b2bStatusMsg"></div>
+
+              <!-- Botones de Acción -->
+              <div style="display:flex;flex-direction:column;gap:.75rem;margin-top:1.25rem">
+                <button type="button" id="b2bSubmitBtn" class="btn btn-primary btn-send-order">
+                  📋 Programar Pedido al Mayor
+                </button>
+                <a href="#" id="b2bWhatsAppDirectBtn" target="_blank" class="btn btn-outline" style="text-align:center;justify-content:center;font-size:.85rem;padding:.75rem">
+                  💬 O confirmar directamente por WhatsApp
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+  </section>
+
+  <!-- ═══ MODAL GOOGLE MAPS — UBICACIÓN B2B ═══ -->
+  <div class="b2b-modal-overlay" id="b2bMapModal" role="dialog" aria-modal="true" aria-labelledby="b2bModalTitle">
+    <div class="b2b-modal-card">
+      <div class="b2b-modal-header">
+        <h3 id="b2bModalTitle">📍 Ubicación del Local en Google Maps</h3>
+        <button type="button" class="b2b-modal-close" id="btnCloseB2BMap" aria-label="Cerrar modal">&times;</button>
+      </div>
+
+      <div class="b2b-modal-body">
+        <p style="font-size:.84rem;color:rgba(253,248,239,.65);margin-bottom:.5rem">
+          Arrastra o toca el pin dorado 🐷 para fijar el local de tu negocio, o pulsa <strong>🎯 Mi GPS</strong> para detección automática.
+        </p>
+
+        <!-- Selector de Capas y Zonas Rápidas -->
+        <div class="zone-chips" style="margin-bottom:.75rem">
+          <span class="zone-chip active" id="b2bLayerRoadBtn">🗺️ Google Calles</span>
+          <span class="zone-chip" id="b2bLayerSatBtn">🛰️ Google Satélite</span>
+          <span class="zone-chip" data-b2b-lat="10.2200" data-b2b-lng="-67.9900" data-b2b-name="Valencia Norte">Valencia Norte</span>
+          <span class="zone-chip" data-b2b-lat="10.2541" data-b2b-lng="-67.9540" data-b2b-name="San Diego">San Diego</span>
+          <span class="zone-chip" data-b2b-lat="10.2520" data-b2b-lng="-68.0120" data-b2b-name="Naguanagua">Naguanagua</span>
+          <span class="zone-chip" data-b2b-lat="10.1870" data-b2b-lng="-67.9350" data-b2b-name="Los Guayos">Los Guayos</span>
+          <span class="zone-chip gps-chip" id="b2bGpsBtn">🎯 Mi GPS</span>
+        </div>
+
+        <!-- Contenedor del Mapa -->
+        <div id="b2bModalMap"></div>
+
+        <!-- Barra de Coordenadas -->
+        <div class="map-coords-bar">
+          <div>
+            <span>Punto fijado:</span>
+            <strong id="b2bModalCoords">10.2200, -67.9900</strong>
+            <span style="color:var(--gold);margin-left:.5rem;" id="b2bModalZone">(Valencia Norte)</span>
+          </div>
+          <a href="https://maps.google.com/?q=10.2200,-67.9900" target="_blank" id="b2bModalMapsLink">🗺️ Ver en Google Maps</a>
+        </div>
+
+        <!-- Punto de Referencia o Nombre del Local -->
+        <div class="form-group" style="margin-bottom:0;margin-top:.25rem">
+          <label class="form-label" for="b2bManualRefInput" style="font-size:.72rem">Nombre del Local / Centro Comercial / Punto de Referencia:</label>
+          <input type="text" id="b2bManualRefInput" class="form-input" placeholder="Ej. CC Cristal local 14, al lado de la farmacia, frente a la plaza..." style="font-size:.85rem;padding:.65rem .85rem">
+        </div>
+      </div>
+
+      <div class="b2b-modal-footer">
+        <span style="font-size:.78rem;color:rgba(253,248,239,.5)">
+          💡 La coordenada exacta y enlace a Google Maps se anexarán a tu orden.
+        </span>
+        <button type="button" id="b2bConfirmLocationBtn" class="btn btn-primary" style="padding:.75rem 1.5rem;font-size:.9rem">
+          ✅ Confirmar Esta Ubicación
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ FAQ ═══ -->
+  <section id="faq">
+    <div class="section-inner">
+      <div class="reveal">
+        <p class="section-label">Preguntas Frecuentes</p>
+        <h2 class="section-title" style="color:var(--cream)">Todo lo que necesitas saber</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item reveal">
+          <button class="faq-question">¿La comida sabe mucho a cochino?<span class="faq-icon">+</span></button>
+          <div class="faq-answer"><p>¡No! La manteca bien procesada tiene un sabor neutro y sutil. Potencia el sabor natural de los alimentos sin dominar. Tus tajadas sabrán a plátano, tus arepas a maíz. Lo que sí notarás es un aroma y textura inigualables.</p></div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-question">¿Necesita refrigeración?<span class="faq-icon">+</span></button>
+          <div class="faq-answer"><p>No es necesario. Se conserva perfectamente a temperatura ambiente en un lugar fresco y seco, lejos de la luz directa. El frasco de vidrio mantiene la frescura por meses.</p></div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-question">¿Cuánto dura el frasco de 500 g?<span class="faq-icon">+</span></button>
+          <div class="faq-answer"><p>Para una familia que cocina a diario, un frasco rinde entre 3 y 4 semanas. Necesitas menos cantidad que con aceite porque no se absorbe tanto al freír.</p></div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-question">¿Es más sana que el aceite vegetal?<span class="faq-icon">+</span></button>
+          <div class="faq-answer"><p>Sí. Rica en ácido oleico (la misma grasa del aceite de oliva), cero grasas trans y sin solventes. Estudios recientes han revalorado la grasa animal natural frente a los aceites industriales.</p></div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-question">¿El frasco de vidrio es reciclable?<span class="faq-icon">+</span></button>
+          <div class="faq-answer"><p>¡Absolutamente! 100% reciclable y reutilizable. Muchos clientes lo usan para guardar especias, salsas o conservas caseras.</p></div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-question">¿Hacen envíos fuera de Valencia?<span class="faq-icon">+</span></button>
+          <div class="faq-answer"><p>Actualmente hacemos delivery en San Diego, Naguanagua, Los Guayos y Norte de Valencia. Si estás en otra zona de Carabobo, escríbenos y lo coordinamos.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer>
+    <div class="footer-brand">Puerco & Puerca</div>
+    <p>Manteca de puerco artesanal · 100% natural</p>
+    <p>📍 Valencia, Estado Carabobo — Venezuela</p>
+    <div class="footer-links">
+      <a href="https://wa.me/584144244920" target="_blank">💬 WhatsApp</a>
+      <a href="https://instagram.com/puercoyouerca" target="_blank">📸 Instagram</a>
+    </div>
+    <p style="margin-top:2rem;font-size:.72rem;opacity:.35">© 2026 Manteca Puerco y Puerca. Todos los derechos reservados.</p>
+  </footer>
+
+  <button class="scroll-top" id="scrollTop" aria-label="Volver arriba">↑</button>
+
+  <!-- ═══ JAVASCRIPT ═══ -->
+  <script>
+  (function(){
+    'use strict';
+
+    /* ── NAV ── */
+    const nav=document.getElementById('mainNav');
+    const navToggle=document.getElementById('navToggle');
+    const navLinks=document.getElementById('navLinks');
+    navToggle.addEventListener('click',()=>{navToggle.classList.toggle('open');navLinks.classList.toggle('open')});
+    navLinks.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{navToggle.classList.remove('open');navLinks.classList.remove('open')}));
+    window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>60),{passive:true});
+
+    /* ── FAQ ── */
+    document.querySelectorAll('.faq-question').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const item=btn.parentElement,was=item.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+        if(!was)item.classList.add('open');
+      });
+    });
+
+    /* ── SCROLL REVEAL ── */
+    const ro=new IntersectionObserver(entries=>{
+      entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');ro.unobserve(e.target)}});
+    },{threshold:.08,rootMargin:'0px 0px -30px 0px'});
+    document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
+
+    /* ── SCROLL-TO-TOP ── */
+    const stb=document.getElementById('scrollTop');
+    window.addEventListener('scroll',()=>stb.classList.toggle('visible',scrollY>600),{passive:true});
+    stb.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+    /* ── ACTIVE NAV ── */
+    const secs=document.querySelectorAll('section[id]');
+    const navAs=document.querySelectorAll('.nav-links a:not(.nav-cta)');
+    const ao=new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          navAs.forEach(l=>l.classList.remove('active'));
+          const al=document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+          if(al)al.classList.add('active');
+        }
+      });
+    },{threshold:.25});
+    secs.forEach(s=>ao.observe(s));
+
+    /* ══════════════════════════════════════════════════
+       ULTRA-SMOOTH CANVAS FRAME SCRUBBING (Apple-Style)
+       Driven by 72 pre-rendered WebP frames in /frames/
+       0ms seek latency · 60/120 FPS · Zero browser decoder lag
+       ══════════════════════════════════════════════════ */
+
+    const canvas = document.getElementById('heroCanvas');
+    const ctx = canvas.getContext('2d', { alpha: false });
+    const wrapper = document.getElementById('videoWrapper');
+    const progressBar = document.getElementById('scrollProgress');
+    const panels = [
+      { el: document.getElementById('vpanel1'), start: 0.00, end: 0.20 },
+      { el: document.getElementById('vpanel2'), start: 0.25, end: 0.45 },
+      { el: document.getElementById('vpanel3'), start: 0.52, end: 0.72 },
+      { el: document.getElementById('vpanel4'), start: 0.78, end: 0.96 },
+    ];
+
+    const TOTAL_FRAMES = 75;
+    const images = [];
+    const sequence = { frame: 0 };
+    let lastRenderedIndex = -1;
+
+    // Helper: format frame path
+    const getFramePath = (idx) => `frames/frame_${String(idx + 1).padStart(4, '0')}.webp`;
+
+    // ── Draw frame covering canvas (object-fit: cover) ──
+    function render(frameIndex) {
+      const idx = Math.max(0, Math.min(Math.round(frameIndex), TOTAL_FRAMES - 1));
+      const img = images[idx];
+      if (!img || !img.complete || img.naturalWidth === 0) return;
+
+      lastRenderedIndex = idx;
+      const cw = canvas.width, ch = canvas.height;
+      const iw = img.naturalWidth, ih = img.naturalHeight;
+      const cRatio = cw / ch;
+      const iRatio = iw / ih;
+
+      let sx, sy, sw, sh;
+      if (iRatio > cRatio) {
+        sh = ih;
+        sw = ih * cRatio;
+        sx = (iw - sw) / 2;
+        sy = 0;
+      } else {
+        sw = iw;
+        sh = iw / cRatio;
+        sx = 0;
+        sy = (ih - sh) / 2;
+      }
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, cw, ch);
+    }
+
+    // ── High-DPI Canvas Resize ──
+    function resizeCanvas() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width  = Math.round(window.innerWidth * dpr);
+      canvas.height = Math.round(window.innerHeight * dpr);
+      canvas.style.width  = '100%';
+      canvas.style.height = '100%';
+      render(sequence.frame);
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    // ── Preload all frames into memory ──
+    for (let i = 0; i < TOTAL_FRAMES; i++) {
+      const img = new Image();
+      img.src = getFramePath(i);
+      img.onload = () => {
+        // Render first frame as soon as it arrives
+        if (i === 0 && lastRenderedIndex === -1) {
+          resizeCanvas();
+          render(0);
+        }
+      };
+      images.push(img);
+    }
+
+    // Initial canvas setup
+    resizeCanvas();
+
+    // ── GSAP ScrollTrigger Integration ──
+    gsap.registerPlugin(ScrollTrigger);
+
+    gsap.to(sequence, {
+      frame: TOTAL_FRAMES - 1,
+      ease: 'none',
+      onUpdate: () => {
+        render(sequence.frame);
+      },
+      scrollTrigger: {
+        trigger: wrapper,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 0.6, // Buttery smooth Apple-style inertia
+        onUpdate: (self) => {
+          render(sequence.frame);
+
+          // Update floating text panels
+          const p = self.progress;
+          panels.forEach(panel => {
+            const isVisible = p >= panel.start && p <= panel.end;
+            panel.el.classList.toggle('visible', isVisible);
+          });
+
+          // Update progress bar
+          if (progressBar) {
+            progressBar.style.width = (p * 100) + '%';
+          }
+        }
+      }
+    });
+
+    /* ══════════════════════════════════════════════════
+       INTERACTIVE DELIVERY MAP & WHATSAPP GENERATOR
+       ══════════════════════════════════════════════════ */
+    let selectedLat = 10.2200;
+    let selectedLng = -67.9900;
+    let selectedZoneName = 'Norte de Valencia';
+    let selectedPack = '2 Frascos (Ahorro)';
+    let selectedPrice = 9;
+    let selectedPayment = 'Pago Móvil';
+
+    function updateWhatsAppUrl() {
+      const name = document.getElementById('custName') ? document.getElementById('custName').value.trim() : '';
+      const address = document.getElementById('custAddress') ? document.getElementById('custAddress').value.trim() : '';
+      const mapsUrl = `https://maps.google.com/?q=${selectedLat.toFixed(5)},${selectedLng.toFixed(5)}`;
+
+      let msg = `¡Hola! Quiero hacer un pedido de Manteca Puerco y Puerca 🐷:\n\n`;
+      msg += `📦 Pedido: ${selectedPack} — $${selectedPrice}\n`;
+      msg += `💳 Método de pago: ${selectedPayment}\n`;
+      if (name) msg += `👤 Nombre: ${name}\n`;
+      msg += `📍 Sector/Zona: ${selectedZoneName}\n`;
+      if (address) msg += `🏠 Dirección / Ref: ${address}\n`;
+      msg += `🗺️ Mi ubicación exacta en mapa: ${mapsUrl}\n\n`;
+      msg += `¿Me confirman disponibilidad y tiempo estimado de entrega? Gracias!`;
+
+      const fullUrl = `https://wa.me/584144244920?text=${encodeURIComponent(msg)}`;
+      const btn = document.getElementById('sendOrderBtn');
+      if (btn) btn.href = fullUrl;
+
+      // Update summary cards
+      const sumProduct = document.getElementById('sumProduct');
+      const sumPay = document.getElementById('sumPay');
+      const sumLocation = document.getElementById('sumLocation');
+      const sumTotal = document.getElementById('sumTotal');
+      if (sumProduct) sumProduct.textContent = selectedPack;
+      if (sumPay) sumPay.textContent = selectedPayment;
+      if (sumLocation) sumLocation.textContent = `${selectedZoneName} (${selectedLat.toFixed(3)}, ${selectedLng.toFixed(3)})`;
+      if (sumTotal) sumTotal.textContent = `$${selectedPrice}`;
+    }
+
+    // Initialize Map after DOM loads
+    const mapEl = document.getElementById('deliveryMap');
+    if (mapEl && typeof L !== 'undefined') {
+      const map = L.map('deliveryMap', {
+        center: [selectedLat, selectedLng],
+        zoom: 12,
+        zoomControl: true,
+        scrollWheelZoom: false // avoids hijacking normal page scroll
+      });
+
+      // Google Maps Roadmap Layer (Calles, avenidas, urbanizaciones)
+      const googleRoadmap = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+        maxZoom: 20,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        attribution: '&copy; <a href="https://maps.google.com" target="_blank">Google Maps</a>'
+      });
+
+      // Google Maps Satellite / Hybrid Layer (Foto satelital con nombres de calles)
+      const googleHybrid = L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+        maxZoom: 20,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        attribution: '&copy; <a href="https://maps.google.com" target="_blank">Google Maps</a>'
+      });
+
+      googleRoadmap.addTo(map);
+
+      // Layer toggle buttons
+      const roadBtn = document.getElementById('layerRoadBtn');
+      const satBtn = document.getElementById('layerSatBtn');
+      if (roadBtn && satBtn) {
+        roadBtn.addEventListener('click', () => {
+          if (map.hasLayer(googleHybrid)) map.removeLayer(googleHybrid);
+          if (!map.hasLayer(googleRoadmap)) map.addLayer(googleRoadmap);
+          roadBtn.classList.add('active');
+          satBtn.classList.remove('active');
+        });
+        satBtn.addEventListener('click', () => {
+          if (map.hasLayer(googleRoadmap)) map.removeLayer(googleRoadmap);
+          if (!map.hasLayer(googleHybrid)) map.addLayer(googleHybrid);
+          satBtn.classList.add('active');
+          roadBtn.classList.remove('active');
+        });
+      }
+
+      // Ensure tiles render immediately without blank areas
+      setTimeout(() => { map.invalidateSize(); }, 300);
+      setTimeout(() => { map.invalidateSize(); }, 800);
+      window.addEventListener('resize', () => map.invalidateSize());
+
+      // Custom Gold Pin Marker
+      const goldIcon = L.divIcon({
+        className: 'custom-gold-marker',
+        html: `
+          <div style="
+            width:34px;height:34px;
+            background:linear-gradient(135deg,#f0cc7a,#d4a24c);
+            border:2px solid #fff;border-radius:50% 50% 50% 0;
+            transform:rotate(-45deg);
+            box-shadow:0 0 24px rgba(212,162,76,0.9), 0 6px 14px rgba(0,0,0,0.8);
+            display:flex;align-items:center;justify-content:center;
+            cursor:pointer;
+          ">
+            <span style="transform:rotate(45deg);font-size:17px;line-height:1;">🐷</span>
+          </div>
+        `,
+        iconSize: [34, 34],
+        iconAnchor: [17, 34],
+        popupAnchor: [0, -34]
+      });
+
+      const marker = L.marker([selectedLat, selectedLng], {
+        icon: goldIcon,
+        draggable: true
+      }).addTo(map);
+
+      marker.bindPopup('<b>📍 Tu punto de entrega</b><br>Arrastra o toca el mapa para fijar tu ubicación.').openPopup();
+
+      // Coverage circles in Carabobo
+      const coverageZones = [
+        { name: 'Norte de Valencia', coords: [10.2200, -67.9970], r: 4200 },
+        { name: 'San Diego', coords: [10.2541, -67.9540], r: 4500 },
+        { name: 'Naguanagua', coords: [10.2520, -68.0120], r: 4000 },
+        { name: 'Los Guayos', coords: [10.1870, -67.9350], r: 4200 }
+      ];
+
+      coverageZones.forEach(z => {
+        L.circle(z.coords, {
+          color: '#d4a24c',
+          fillColor: '#d4a24c',
+          fillOpacity: 0.07,
+          weight: 1.5,
+          dashArray: '5, 5',
+          radius: z.r
+        }).addTo(map);
+      });
+
+      function setCoords(lat, lng, name) {
+        selectedLat = lat;
+        selectedLng = lng;
+        if (name) selectedZoneName = name;
+        marker.setLatLng([lat, lng]);
+
+        const dispCoords = document.getElementById('displayCoords');
+        const dispZone = document.getElementById('displayZone');
+        const previewLink = document.getElementById('mapsLinkPreview');
+        if (dispCoords) dispCoords.textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+        if (dispZone) dispZone.textContent = `(${selectedZoneName})`;
+        if (previewLink) previewLink.href = `https://maps.google.com/?q=${lat.toFixed(5)},${lng.toFixed(5)}`;
+
+        updateWhatsAppUrl();
+      }
+
+      // Map click handler
+      map.on('click', (e) => {
+        setCoords(e.latlng.lat, e.latlng.lng, 'Punto en el mapa');
+      });
+
+      // Marker drag handler
+      marker.on('dragend', () => {
+        const p = marker.getLatLng();
+        setCoords(p.lat, p.lng, 'Punto fijado');
+      });
+
+      // Quick zone filter chips
+      document.querySelectorAll('.zone-chip[data-lat]').forEach(chip => {
+        chip.addEventListener('click', () => {
+          document.querySelectorAll('.zone-chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          const lat = parseFloat(chip.dataset.lat);
+          const lng = parseFloat(chip.dataset.lng);
+          const name = chip.dataset.name;
+          map.flyTo([lat, lng], 13, { duration: 1.2 });
+          setCoords(lat, lng, name);
+        });
+      });
+
+      // GPS Geolocation button
+      const gpsBtn = document.getElementById('gpsBtn');
+      if (gpsBtn && navigator.geolocation) {
+        gpsBtn.addEventListener('click', () => {
+          gpsBtn.textContent = '⏳ Buscando...';
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              gpsBtn.textContent = '🎯 Mi GPS';
+              const lat = pos.coords.latitude;
+              const lng = pos.coords.longitude;
+              map.flyTo([lat, lng], 15, { duration: 1.5 });
+              setCoords(lat, lng, 'Ubicación GPS actual');
+            },
+            (err) => {
+              gpsBtn.textContent = '❌ Sin GPS';
+              setTimeout(() => { gpsBtn.textContent = '🎯 Mi GPS'; }, 2500);
+            },
+            { enableHighAccuracy: true, timeout: 8000 }
+          );
+        });
+      }
+    }
+
+    // Pack selection listeners
+    document.querySelectorAll('.pack-opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('.pack-opt').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        selectedPack = opt.dataset.qty;
+        selectedPrice = parseInt(opt.dataset.price, 10);
+        updateWhatsAppUrl();
+      });
+    });
+
+    // Payment method selection listeners
+    document.querySelectorAll('.pay-opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('.pay-opt').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        selectedPayment = opt.dataset.pay;
+        updateWhatsAppUrl();
+      });
+    });
+
+    // Name & Address input listeners
+    const nameInput = document.getElementById('custName');
+    const addrInput = document.getElementById('custAddress');
+    if (nameInput) nameInput.addEventListener('input', updateWhatsAppUrl);
+    if (addrInput) addrInput.addEventListener('input', updateWhatsAppUrl);
+
+    // Initial WhatsApp URL preparation
+    updateWhatsAppUrl();
+
+    /* ══════════════════════════════════════════════════
+       PEDIDOS AL MAYOR (B2B) — CALCULADORA & CALENDARIO
+       Conexión a Google Sheets Webhook + Email Notification
+       Fórmula oficial: 1 caja = 12 un | $3.80/un | $45.60/caja
+       ══════════════════════════════════════════════════ */
+
+    // Configuración de Webhook de Google Sheets + Google Calendar
+    const GOOGLE_SHEETS_WEBHOOK_URL = window.GOOGLE_SHEETS_WEBHOOK_URL || 'https://script.google.com/macros/s/AKfycbw743jfljVYXz4TErj92Gv5KAqnzc-rd3kHRl4DA9Jxbo02w1-eEdHsL1y60UXA9ygH/exec';
+    const BUSINESS_PHONE_CLEAN = '584144244920';
+
+    const B2B_UNIT_PRICE = 3.80;
+    const B2B_BOX_UNITS = 12;
+    const B2B_BOX_PRICE = 45.60;
+    const B2B_RETAIL_PRICE = 5.00;
+    const B2B_PROFIT_PER_BOX = 14.40;
+
+    let b2bBoxes = 2;
+    let b2bSelectedSlot = 'Mañana (8:00 AM - 12:00 PM)';
+
+    const boxInput = document.getElementById('boxQtyInput');
+    const btnMinus = document.getElementById('btnMinusBox');
+    const btnPlus = document.getElementById('btnPlusBox');
+    const quickBtns = document.querySelectorAll('.btn-quick-qty');
+
+    const metricTotalCost = document.getElementById('metricTotalCost');
+    const metricUnits = document.getElementById('metricUnits');
+    const metricUnitPrice = document.getElementById('metricUnitPrice');
+    const metricResale = document.getElementById('metricResale');
+    const metricProfit = document.getElementById('metricProfit');
+
+    const b2bSumBoxes = document.getElementById('b2bSumBoxes');
+    const b2bSumDate = document.getElementById('b2bSumDate');
+    const b2bSumSlot = document.getElementById('b2bSumSlot');
+    const b2bSumTotal = document.getElementById('b2bSumTotal');
+
+    const b2bDateInput = document.getElementById('b2bDeliveryDate');
+    const b2bStatusMsg = document.getElementById('b2bStatusMsg');
+    const b2bSubmitBtn = document.getElementById('b2bSubmitBtn');
+    const b2bWhatsAppDirectBtn = document.getElementById('b2bWhatsAppDirectBtn');
+
+    function formatDisplayDate(dateStr) {
+      if (!dateStr) return 'Por seleccionar';
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        const d = new Date(parts[0], parts[1] - 1, parts[2]);
+        return d.toLocaleDateString('es-VE', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+      }
+      return dateStr;
+    }
+
+    // Inicializar fecha mínima en el calendario (a partir de mañana)
+    if (b2bDateInput) {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const minDateStr = tomorrow.toISOString().split('T')[0];
+      b2bDateInput.min = minDateStr;
+      b2bDateInput.value = minDateStr;
+      if (b2bSumDate) {
+        b2bSumDate.textContent = formatDisplayDate(minDateStr);
+      }
+      b2bDateInput.addEventListener('change', () => {
+        if (b2bSumDate) b2bSumDate.textContent = formatDisplayDate(b2bDateInput.value);
+        updateB2BWhatsAppUrl();
+      });
+    }
+
+    // Actualizar métricas de la calculadora
+    function updateB2BCalculator(qty) {
+      b2bBoxes = Math.max(1, Math.min(qty || 1, 500));
+      if (boxInput) boxInput.value = b2bBoxes;
+
+      const totalUnits = b2bBoxes * B2B_BOX_UNITS;
+      const totalCost = b2bBoxes * B2B_BOX_PRICE;
+      const totalResale = totalUnits * B2B_RETAIL_PRICE;
+      const totalProfit = b2bBoxes * B2B_PROFIT_PER_BOX;
+
+      if (metricTotalCost) metricTotalCost.textContent = `$${totalCost.toFixed(2)}`;
+      if (metricUnits) metricUnits.textContent = `${totalUnits} un`;
+      if (metricUnitPrice) metricUnitPrice.textContent = `$${B2B_UNIT_PRICE.toFixed(2)}`;
+      if (metricResale) metricResale.textContent = `$${totalResale.toFixed(2)}`;
+      if (metricProfit) metricProfit.textContent = `+$${totalProfit.toFixed(2)}`;
+
+      if (b2bSumBoxes) b2bSumBoxes.textContent = `${b2bBoxes} Cajas (${totalUnits} Frascos de 500g)`;
+      if (b2bSumTotal) b2bSumTotal.textContent = `$${totalCost.toFixed(2)}`;
+
+      quickBtns.forEach(btn => {
+        const btnBoxes = parseInt(btn.dataset.boxes, 10);
+        btn.classList.toggle('active', btnBoxes === b2bBoxes);
+      });
+
+      updateB2BWhatsAppUrl();
+    }
+
+    // Controles Stepper
+    if (btnMinus) {
+      btnMinus.addEventListener('click', () => updateB2BCalculator(b2bBoxes - 1));
+    }
+    if (btnPlus) {
+      btnPlus.addEventListener('click', () => updateB2BCalculator(b2bBoxes + 1));
+    }
+    if (boxInput) {
+      boxInput.addEventListener('input', (e) => {
+        const val = parseInt(e.target.value, 10);
+        if (!isNaN(val) && val >= 1) updateB2BCalculator(val);
+      });
+      boxInput.addEventListener('change', (e) => {
+        const val = parseInt(e.target.value, 10);
+        updateB2BCalculator(isNaN(val) || val < 1 ? 1 : val);
+      });
+    }
+
+    // Botones rápidos de cantidad
+    quickBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = parseInt(btn.dataset.boxes, 10);
+        updateB2BCalculator(val);
+      });
+    });
+
+    // Selector de turno (Mañana / Tarde)
+    document.querySelectorAll('#mayoristas .slot-opt').forEach(opt => {
+      opt.addEventListener('click', () => {
+        document.querySelectorAll('#mayoristas .slot-opt').forEach(o => o.classList.remove('selected'));
+        opt.classList.add('selected');
+        b2bSelectedSlot = opt.dataset.slot;
+        if (b2bSumSlot) b2bSumSlot.textContent = b2bSelectedSlot;
+        updateB2BWhatsAppUrl();
+      });
+    });
+
+    // Escucha en campos del formulario para pre-cargar WhatsApp
+    ['b2bBizName', 'b2bContactName', 'b2bPhone', 'b2bEmail', 'b2bNotes'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', updateB2BWhatsAppUrl);
+    });
+
+    /* ══════════════════════════════════════════════════
+       VENTANA EMERGENTE (MODAL) GOOGLE MAPS — B2B
+       Permite fijar ubicación de entrega manual o por GPS
+       ══════════════════════════════════════════════════ */
+
+    const b2bAddressInput = document.getElementById('b2bAddress');
+    const btnOpenB2BMap = document.getElementById('btnOpenB2BMap');
+    const b2bMapModal = document.getElementById('b2bMapModal');
+    const btnCloseB2BMap = document.getElementById('btnCloseB2BMap');
+    const b2bConfirmLocationBtn = document.getElementById('b2bConfirmLocationBtn');
+    const b2bManualRefInput = document.getElementById('b2bManualRefInput');
+    const b2bAddressConfirmedPreview = document.getElementById('b2bAddressConfirmedPreview');
+    const b2bAddressTextPreview = document.getElementById('b2bAddressTextPreview');
+    const b2bMapsLinkPreview = document.getElementById('b2bMapsLinkPreview');
+
+    const b2bModalCoords = document.getElementById('b2bModalCoords');
+    const b2bModalZone = document.getElementById('b2bModalZone');
+    const b2bModalMapsLink = document.getElementById('b2bModalMapsLink');
+
+    let b2bMap = null;
+    let b2bMarker = null;
+    let b2bSelectedLat = 10.2200;
+    let b2bSelectedLng = -67.9900;
+    let b2bSelectedZoneName = 'Valencia Norte';
+    let b2bGoogleMapsUrl = 'https://maps.google.com/?q=10.2200,-67.9900';
+
+    function openB2BModal() {
+      if (!b2bMapModal) return;
+      b2bMapModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+
+      if (!b2bMap) {
+        initB2BModalMap();
+      } else {
+        setTimeout(() => { b2bMap.invalidateSize(); }, 150);
+        setTimeout(() => { b2bMap.invalidateSize(); }, 400);
+      }
+    }
+
+    function closeB2BModal() {
+      if (!b2bMapModal) return;
+      b2bMapModal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    if (b2bAddressInput) b2bAddressInput.addEventListener('click', openB2BModal);
+    if (btnOpenB2BMap) btnOpenB2BMap.addEventListener('click', openB2BModal);
+    if (btnCloseB2BMap) btnCloseB2BMap.addEventListener('click', closeB2BModal);
+
+    // Cerrar al hacer clic en el fondo oscuro
+    if (b2bMapModal) {
+      b2bMapModal.addEventListener('click', (e) => {
+        if (e.target === b2bMapModal) closeB2BModal();
+      });
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && b2bMapModal.classList.contains('active')) {
+          closeB2BModal();
+        }
+      });
+    }
+
+    function setB2BCoords(lat, lng, name) {
+      b2bSelectedLat = lat;
+      b2bSelectedLng = lng;
+      if (name) b2bSelectedZoneName = name;
+      if (b2bMarker) b2bMarker.setLatLng([lat, lng]);
+
+      b2bGoogleMapsUrl = `https://maps.google.com/?q=${lat.toFixed(5)},${lng.toFixed(5)}`;
+      if (b2bModalCoords) b2bModalCoords.textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      if (b2bModalZone) b2bModalZone.textContent = `(${b2bSelectedZoneName})`;
+      if (b2bModalMapsLink) b2bModalMapsLink.href = b2bGoogleMapsUrl;
+    }
+
+    function initB2BModalMap() {
+      if (!document.getElementById('b2bModalMap')) return;
+
+      b2bMap = L.map('b2bModalMap', {
+        center: [b2bSelectedLat, b2bSelectedLng],
+        zoom: 13,
+        zoomControl: true,
+        scrollWheelZoom: true
+      });
+
+      // Capas Google Maps Calles y Satélite
+      const b2bGoogleRoadmap = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+        maxZoom: 20,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        attribution: '&copy; Google Maps'
+      });
+
+      const b2bGoogleHybrid = L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+        maxZoom: 20,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        attribution: '&copy; Google Maps'
+      });
+
+      b2bGoogleRoadmap.addTo(b2bMap);
+
+      // Alternar capas
+      const roadBtn = document.getElementById('b2bLayerRoadBtn');
+      const satBtn = document.getElementById('b2bLayerSatBtn');
+      if (roadBtn && satBtn) {
+        roadBtn.addEventListener('click', () => {
+          if (b2bMap.hasLayer(b2bGoogleHybrid)) b2bMap.removeLayer(b2bGoogleHybrid);
+          if (!b2bMap.hasLayer(b2bGoogleRoadmap)) b2bMap.addLayer(b2bGoogleRoadmap);
+          roadBtn.classList.add('active');
+          satBtn.classList.remove('active');
+        });
+        satBtn.addEventListener('click', () => {
+          if (b2bMap.hasLayer(b2bGoogleRoadmap)) b2bMap.removeLayer(b2bGoogleRoadmap);
+          if (!b2bMap.hasLayer(b2bGoogleHybrid)) b2bMap.addLayer(b2bGoogleHybrid);
+          satBtn.classList.add('active');
+          roadBtn.classList.remove('active');
+        });
+      }
+
+      // Marcador dorado personalizado con cerdito 🐷
+      const b2bGoldIcon = L.divIcon({
+        className: 'custom-gold-marker',
+        html: `
+          <div style="
+            width:34px;height:34px;
+            background:linear-gradient(135deg,#f0cc7a,#d4a24c);
+            border:2px solid #fff;border-radius:50% 50% 50% 0;
+            transform:rotate(-45deg);
+            box-shadow:0 0 24px rgba(212,162,76,0.9), 0 6px 14px rgba(0,0,0,0.8);
+            display:flex;align-items:center;justify-content:center;
+            cursor:pointer;
+          ">
+            <span style="transform:rotate(45deg);font-size:17px;line-height:1;">🐷</span>
+          </div>
+        `,
+        iconSize: [34, 34],
+        iconAnchor: [17, 34],
+        popupAnchor: [0, -34]
+      });
+
+      b2bMarker = L.marker([b2bSelectedLat, b2bSelectedLng], {
+        icon: b2bGoldIcon,
+        draggable: true
+      }).addTo(b2bMap);
+
+      b2bMarker.bindPopup('<b>🏢 Local de tu Negocio</b><br>Arrastra o toca para fijar la ubicación exacta.').openPopup();
+
+      // Zonas de cobertura de Carabobo
+      const zones = [
+        { name: 'Valencia Norte', coords: [10.2200, -67.9970], r: 4200 },
+        { name: 'San Diego', coords: [10.2541, -67.9540], r: 4500 },
+        { name: 'Naguanagua', coords: [10.2520, -68.0120], r: 4000 },
+        { name: 'Los Guayos', coords: [10.1870, -67.9350], r: 4200 }
+      ];
+      zones.forEach(z => {
+        L.circle(z.coords, {
+          color: '#d4a24c',
+          fillColor: '#d4a24c',
+          fillOpacity: 0.06,
+          weight: 1.5,
+          dashArray: '5, 5',
+          radius: z.r
+        }).addTo(b2bMap);
+      });
+
+      // Clic en el mapa para colocar el pin
+      b2bMap.on('click', (e) => {
+        setB2BCoords(e.latlng.lat, e.latlng.lng, 'Punto fijado en mapa');
+      });
+
+      // Arrastrar marcador
+      b2bMarker.on('dragend', () => {
+        const p = b2bMarker.getLatLng();
+        setB2BCoords(p.lat, p.lng, 'Punto fijado');
+      });
+
+      // Botones rápidos de zonas
+      document.querySelectorAll('[data-b2b-lat]').forEach(chip => {
+        chip.addEventListener('click', () => {
+          document.querySelectorAll('[data-b2b-lat]').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          const lat = parseFloat(chip.dataset.b2bLat);
+          const lng = parseFloat(chip.dataset.b2bLng);
+          const name = chip.dataset.b2bName;
+          b2bMap.flyTo([lat, lng], 13, { duration: 1.2 });
+          setB2BCoords(lat, lng, name);
+        });
+      });
+
+      // Botón GPS Automático
+      const gpsBtn = document.getElementById('b2bGpsBtn');
+      if (gpsBtn && navigator.geolocation) {
+        gpsBtn.addEventListener('click', () => {
+          gpsBtn.textContent = '⏳ Buscando...';
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              gpsBtn.textContent = '🎯 Mi GPS';
+              const lat = pos.coords.latitude;
+              const lng = pos.coords.longitude;
+              b2bMap.flyTo([lat, lng], 15, { duration: 1.4 });
+              setB2BCoords(lat, lng, 'Ubicación GPS actual');
+            },
+            (err) => {
+              gpsBtn.textContent = '❌ Sin GPS';
+              setTimeout(() => { gpsBtn.textContent = '🎯 Mi GPS'; }, 2500);
+            },
+            { enableHighAccuracy: true, timeout: 8000 }
+          );
+        });
+      }
+
+      setTimeout(() => { b2bMap.invalidateSize(); }, 200);
+      setTimeout(() => { b2bMap.invalidateSize(); }, 500);
+    }
+
+    // Botón de confirmación de ubicación del modal
+    if (b2bConfirmLocationBtn) {
+      b2bConfirmLocationBtn.addEventListener('click', () => {
+        const manualRef = (b2bManualRefInput?.value || '').trim();
+        let displayStr = '';
+        if (manualRef) {
+          displayStr = `${manualRef}, ${b2bSelectedZoneName} (📍 Coords: ${b2bSelectedLat.toFixed(4)}, ${b2bSelectedLng.toFixed(4)})`;
+        } else {
+          displayStr = `${b2bSelectedZoneName} (📍 Coords: ${b2bSelectedLat.toFixed(4)}, ${b2bSelectedLng.toFixed(4)})`;
+        }
+
+        if (b2bAddressInput) {
+          b2bAddressInput.value = displayStr;
+        }
+
+        if (b2bAddressConfirmedPreview) {
+          b2bAddressConfirmedPreview.style.display = 'block';
+          if (b2bAddressTextPreview) b2bAddressTextPreview.textContent = displayStr;
+          if (b2bMapsLinkPreview) b2bMapsLinkPreview.href = b2bGoogleMapsUrl;
+        }
+
+        closeB2BModal();
+        updateB2BWhatsAppUrl();
+      });
+    }
+
+    function getB2BFormData() {
+      const bizName = (document.getElementById('b2bBizName')?.value || '').trim();
+      const contact = (document.getElementById('b2bContactName')?.value || '').trim();
+      const phone = (document.getElementById('b2bPhone')?.value || '').trim();
+      const email = (document.getElementById('b2bEmail')?.value || '').trim();
+      const address = (document.getElementById('b2bAddress')?.value || '').trim();
+      const notes = (document.getElementById('b2bNotes')?.value || '').trim();
+      const dateVal = b2bDateInput ? b2bDateInput.value : '';
+
+      const totalUnits = b2bBoxes * B2B_BOX_UNITS;
+      const totalCost = (b2bBoxes * B2B_BOX_PRICE).toFixed(2);
+
+      return {
+        timestamp: new Date().toISOString(),
+        boxes: b2bBoxes,
+        totalUnits: totalUnits,
+        unitPrice: B2B_UNIT_PRICE.toFixed(2),
+        totalPrice: totalCost,
+        deliveryDate: dateVal,
+        displayDate: formatDisplayDate(dateVal),
+        slot: b2bSelectedSlot,
+        bizName: bizName,
+        contact: contact,
+        phone: phone,
+        email: email,
+        address: address,
+        mapLink: b2bGoogleMapsUrl,
+        lat: b2bSelectedLat,
+        lng: b2bSelectedLng,
+        notes: notes
+      };
+    }
+
+    function buildB2BWhatsAppMessage(data) {
+      return `🏢 *ORDEN DE PEDIDO AL MAYOR — PUERCO & PUERCA*\n\n` +
+        `📦 *Volumen:* ${data.boxes} Cajas (${data.totalUnits} frascos de 500g)\n` +
+        `🏷️ *Tarifa al mayor:* $3.80 / frasco ($45.60 / caja)\n` +
+        `💰 *Total a Facturar:* $${data.totalPrice}\n` +
+        `📅 *Fecha de Despacho Solicitada:* ${data.displayDate} (${data.deliveryDate || 'A coordinar'})\n` +
+        `⏰ *Turno:* ${data.slot}\n\n` +
+        `🏬 *Negocio:* ${data.bizName || '(Por especificar)'}\n` +
+        `👤 *Contacto:* ${data.contact || '(Por especificar)'}\n` +
+        `📱 *Teléfono:* ${data.phone || '(Por especificar)'}\n` +
+        `✉️ *Email:* ${data.email || '(Por especificar)'}\n` +
+        `📍 *Dirección de Entrega:* ${data.address || '(Por especificar)'}\n` +
+        (data.mapLink ? `🗺️ *Ubicación en Google Maps:* ${data.mapLink}\n` : '') +
+        (data.notes ? `📝 *Notas:* ${data.notes}\n` : '') +
+        `\n_Por favor confirmar disponibilidad y método de pago._`;
+    }
+
+    function updateB2BWhatsAppUrl() {
+      const data = getB2BFormData();
+      const text = buildB2BWhatsAppMessage(data);
+      const url = `https://wa.me/${BUSINESS_PHONE_CLEAN}?text=${encodeURIComponent(text)}`;
+      if (b2bWhatsAppDirectBtn) b2bWhatsAppDirectBtn.href = url;
+      return url;
+    }
+
+    // Manejador del botón "Programar Pedido al Mayor" (Google Sheets + Alerta por Correo)
+    if (b2bSubmitBtn) {
+      b2bSubmitBtn.addEventListener('click', async () => {
+        const data = getB2BFormData();
+
+        // Validaciones
+        if (!data.deliveryDate) {
+          alert('Por favor selecciona una fecha en el calendario.');
+          b2bDateInput?.focus();
+          return;
+        }
+        if (!data.bizName) {
+          alert('Por favor ingresa el nombre de tu negocio o razón social.');
+          document.getElementById('b2bBizName')?.focus();
+          return;
+        }
+        if (!data.contact) {
+          alert('Por favor ingresa la persona o encargado de compras.');
+          document.getElementById('b2bContactName')?.focus();
+          return;
+        }
+        if (!data.phone) {
+          alert('Por favor ingresa tu número de WhatsApp o teléfono.');
+          document.getElementById('b2bPhone')?.focus();
+          return;
+        }
+
+        // Estado visual de carga
+        if (b2bStatusMsg) {
+          b2bStatusMsg.className = 'order-status-msg loading';
+          b2bStatusMsg.innerHTML = '⏳ <strong>Registrando tu pedido en Google Sheets...</strong><br>Enviando notificación al correo comercial.';
+        }
+        b2bSubmitBtn.disabled = true;
+
+        const waUrl = updateB2BWhatsAppUrl();
+
+        try {
+          if (GOOGLE_SHEETS_WEBHOOK_URL && !GOOGLE_SHEETS_WEBHOOK_URL.includes('REPLACE_WITH')) {
+            await fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
+              method: 'POST',
+              mode: 'no-cors',
+              headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+              body: JSON.stringify(data)
+            });
+          } else {
+            await new Promise(r => setTimeout(r, 600));
+          }
+
+          if (b2bStatusMsg) {
+            b2bStatusMsg.className = 'order-status-msg success';
+            b2bStatusMsg.innerHTML = `
+              🎉 <strong>¡Pedido al Mayor Programado con Éxito!</strong><br>
+              Se registró en Google Sheets y se envió la alerta por correo.<br>
+              <div style="margin-top:.75rem">
+                <a href="${waUrl}" target="_blank" class="btn btn-whatsapp" style="display:inline-flex;padding:.5rem 1rem;font-size:.82rem">
+                  💬 Abrir WhatsApp con esta orden
+                </a>
+              </div>
+            `;
+          }
+        } catch (err) {
+          console.warn('Google Sheets notice:', err);
+          if (b2bStatusMsg) {
+            b2bStatusMsg.className = 'order-status-msg success';
+            b2bStatusMsg.innerHTML = `
+              ✅ <strong>¡Orden lista para coordinar!</strong><br>
+              Puedes confirmar tu pedido directamente por WhatsApp.<br>
+              <div style="margin-top:.75rem">
+                <a href="${waUrl}" target="_blank" class="btn btn-whatsapp" style="display:inline-flex;padding:.5rem 1rem;font-size:.82rem">
+                  💬 Confirmar Orden por WhatsApp
+                </a>
+              </div>
+            `;
+          }
+        } finally {
+          b2bSubmitBtn.disabled = false;
+        }
+      });
+    }
+
+    // Inicializar calculadora en 2 cajas por defecto
+    updateB2BCalculator(2);
+
+  })();
+  </script>
+</body>
+</html>
