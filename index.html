@@ -1083,45 +1083,225 @@
     .faq-answer p{font-size:.95rem;color:rgba(253,248,239,.55);line-height:1.8}
 
     /* ══════════════════ FOOTER ══════════════════ */
+    /* ══════════════════ FOOTER ══════════════════ */
     footer{
-      background:#050302;color:rgba(253,248,239,.35);
-      text-align:center;padding:4rem 2rem;
-      border-top:1px solid rgba(212,162,76,.06);
+      background:#050302;color:rgba(253,248,239,.65);
+      text-align:center;padding:4.5rem 1.5rem 6.5rem;
+      border-top:1px solid rgba(212,162,76,.15);
+      position:relative;
+    }
+    .footer-inner{
+      max-width:960px;margin:0 auto;
     }
     .footer-logo-box{
       display:flex;justify-content:center;margin-bottom:1.25rem;
     }
     .footer-logo-img{
-      height:75px;width:auto;object-fit:contain;
-      filter:drop-shadow(0 4px 20px rgba(212,162,76,.35));
+      height:80px;width:auto;object-fit:contain;
+      filter:drop-shadow(0 4px 24px rgba(212,162,76,.4));
       transition:transform .3s var(--ease);
     }
     .footer-logo-img:hover{
       transform:scale(1.08) rotate(2deg);
     }
     .footer-brand{
-      font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:800;
+      font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:800;
       background:linear-gradient(135deg,var(--gold-light),var(--gold));
       -webkit-background-clip:text;background-clip:text;
       -webkit-text-fill-color:transparent;
-      margin-bottom:.5rem;
+      margin-bottom:.4rem;
     }
-    footer p{font-size:.85rem;line-height:1.7}
-    footer a{
-      color:var(--gold);text-decoration:none;
-      transition:opacity .3s;
+    .footer-tagline{
+      font-size:1rem;color:rgba(253,248,239,.8);margin-bottom:.5rem;font-weight:500;
     }
-    footer a:hover{opacity:.7}
+    .footer-location{
+      font-size:.9rem;color:rgba(253,248,239,.6);margin-bottom:1.5rem;
+    }
     .footer-links{
-      display:flex;gap:1.5rem;justify-content:center;margin-top:1.25rem;
+      display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin:1.5rem 0 2rem;
     }
     .footer-links a{
-      display:inline-flex;align-items:center;gap:.4rem;
-      padding:.5rem 1.25rem;border-radius:50px;
-      border:1px solid rgba(212,162,76,.12);
-      font-size:.85rem;transition:all .3s;
+      display:inline-flex;align-items:center;gap:.5rem;
+      padding:.65rem 1.4rem;border-radius:50px;
+      border:1.5px solid rgba(212,162,76,.25);
+      background:rgba(212,162,76,.05);
+      color:var(--gold-light);font-size:.92rem;font-weight:600;
+      text-decoration:none;transition:all .3s var(--ease);
     }
-    .footer-links a:hover{border-color:var(--gold);background:rgba(212,162,76,.06)}
+    .footer-links a:hover{
+      border-color:var(--gold);background:var(--gold);color:var(--brown-dark);
+      transform:translateY(-2px);box-shadow:0 6px 20px var(--gold-glow);
+    }
+
+    /* Legal Disclaimers Box */
+    .footer-legal-box{
+      background:rgba(255,255,255,.02);
+      border:1px solid rgba(212,162,76,.15);
+      border-radius:14px;padding:1.5rem 1.75rem;
+      margin:2rem 0;text-align:left;
+    }
+    .footer-legal-title{
+      font-size:.85rem;font-weight:700;color:var(--gold);
+      text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem;
+      display:flex;align-items:center;gap:.5rem;
+    }
+    .footer-legal-text{
+      font-size:.82rem;color:rgba(253,248,239,.65);line-height:1.75;margin-bottom:.75rem;
+    }
+    .footer-legal-text:last-child{margin-bottom:0}
+
+    /* Rights Reserved */
+    .footer-rights{
+      font-size:.82rem;color:rgba(253,248,239,.5);margin:1.5rem 0 2rem;line-height:1.6;
+    }
+
+    /* Creator & Developer Credit */
+    .creator-card{
+      display:inline-flex;align-items:center;gap:1.25rem;
+      background:linear-gradient(135deg,rgba(212,162,76,.12),rgba(12,7,3,.85));
+      border:1.5px solid rgba(212,162,76,.35);
+      border-radius:16px;padding:1.15rem 1.6rem;
+      margin:1rem auto 0;text-align:left;
+      box-shadow:0 10px 30px rgba(0,0,0,.5);
+      transition:all .3s var(--ease);
+      max-width:580px;width:100%;
+    }
+    .creator-card:hover{
+      border-color:var(--gold);transform:translateY(-3px);
+      box-shadow:0 14px 40px rgba(212,162,76,.15);
+    }
+    .creator-avatar{
+      width:52px;height:52px;border-radius:50%;
+      background:linear-gradient(135deg,var(--gold),var(--gold-dark));
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.5rem;flex-shrink:0;box-shadow:0 4px 15px var(--gold-glow);
+    }
+    .creator-info{flex:1}
+    .creator-label{
+      font-size:.72rem;font-weight:700;color:var(--gold);
+      text-transform:uppercase;letter-spacing:.08em;margin-bottom:.15rem;display:block;
+    }
+    .creator-name{
+      font-size:1.1rem;font-weight:800;color:var(--cream);margin-bottom:.2rem;
+    }
+    .creator-role{
+      font-size:.8rem;color:rgba(253,248,239,.75);line-height:1.4;margin-bottom:.4rem;
+    }
+    .creator-ig-btn{
+      display:inline-flex;align-items:center;gap:.35rem;
+      color:var(--gold-light);font-size:.82rem;font-weight:700;
+      text-decoration:none;transition:color .25s;
+    }
+    .creator-ig-btn:hover{color:var(--cream);text-decoration:underline}
+
+    /* Floating WhatsApp Button for Mobile (Age 40+ Accessibility) */
+    .floating-wa-btn{
+      position:fixed;bottom:1.5rem;right:1.25rem;z-index:9998;
+      background:linear-gradient(135deg,#25D366,#1eb857);
+      color:#fff;text-decoration:none;
+      display:inline-flex;align-items:center;gap:.65rem;
+      padding:.85rem 1.4rem;border-radius:50px;
+      font-weight:800;font-size:1rem;letter-spacing:.01em;
+      box-shadow:0 8px 30px rgba(37,211,102,.5),0 2px 8px rgba(0,0,0,.6);
+      transition:all .3s var(--ease);
+      border:2px solid rgba(255,255,255,.2);
+      animation:float-bounce 3s infinite ease-in-out;
+    }
+    @keyframes float-bounce{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-6px)}
+    }
+    .floating-wa-btn:hover{
+      transform:scale(1.06) translateY(-2px);
+      box-shadow:0 12px 35px rgba(37,211,102,.7);
+      color:#fff;
+    }
+    .floating-wa-btn .fwa-icon{font-size:1.35rem;line-height:1}
+
+    /* ══════════════════ ACCESIBILIDAD Y RESPONSIVE MÓVIL (+40 AÑOS) ══════════════════ */
+    @media(max-width:768px){
+      /* Tipografía con mayor contraste y legibilidad */
+      html{font-size:16.5px}
+      body{line-height:1.7}
+      .section-subtitle{font-size:1.05rem;line-height:1.75;color:rgba(253,248,239,.85);margin-bottom:2rem}
+      .section-title{font-size:clamp(1.85rem,7vw,2.5rem);line-height:1.15;margin-bottom:1.15rem}
+
+      /* Botones táctiles amplios */
+      .btn{
+        width:100%;justify-content:center;
+        min-height:54px;padding:1rem 1.5rem;font-size:1.05rem;
+      }
+      .hero-buttons{
+        flex-direction:column;gap:.85rem;width:100%;max-width:380px;margin:0 auto;
+      }
+
+      /* Panel de texto en Video Hero legible y centrado */
+      .video-text-panel{
+        width:92%!important;max-width:92%!important;left:4%!important;right:4%!important;
+        padding:1.6rem 1.4rem!important;
+        background:rgba(12,7,3,.88)!important;
+        border:1.5px solid rgba(212,162,76,.3)!important;
+      }
+      .vtp-title{font-size:1.65rem!important;line-height:1.2}
+      .vtp-body{font-size:.98rem!important;line-height:1.6;color:rgba(253,248,239,.9)!important}
+
+      /* Form inputs accesibles: no zoom involuntario en iPhone/Android */
+      .form-input, .date-input-group input[type="date"]{
+        font-size:16px!important;min-height:50px;padding:.85rem 1rem!important;
+        border-radius:12px;
+      }
+      .form-label{font-size:.84rem!important;letter-spacing:.04em;margin-bottom:.55rem}
+
+      /* Tarjetas de packs fáciles de distinguir */
+      .packs{grid-template-columns:1fr;gap:1.2rem}
+      .pack-card{padding:1.75rem 1.25rem}
+      .pack-name{font-size:1.35rem}
+      .pack-price{font-size:2.4rem}
+
+      /* Controles de la Calculadora B2B súper táctiles */
+      .stepper-controls{gap:1rem;padding:.5rem .8rem}
+      .btn-step{
+        width:50px!important;height:50px!important;
+        font-size:1.8rem!important;border-radius:50%;
+      }
+      .stepper-input{width:90px!important;font-size:2.5rem!important}
+      .stepper-quick-btns{gap:.6rem}
+      .btn-quick-qty{
+        min-height:44px;padding:.55rem 1rem!important;font-size:.85rem!important;
+        font-weight:700!important;border-radius:50px;
+      }
+
+      /* Selector de Turno B2B y Pack Delivery */
+      .slot-selector{grid-template-columns:1fr;gap:.75rem}
+      .slot-opt{padding:1rem .85rem;font-size:.95rem}
+      .pack-selector{grid-template-columns:1fr;gap:.75rem}
+      .pack-opt{padding:1rem .75rem}
+      .pay-selector{grid-template-columns:1fr;gap:.6rem}
+      .pay-opt{padding:.85rem .5rem;font-size:.9rem}
+
+      /* Mapa en Celular: tamaño adecuado para no bloquear el scroll */
+      #deliveryMap{height:300px}
+      .zone-chips{gap:.5rem;justify-content:center}
+      .zone-chip{padding:.5rem .95rem;font-size:.85rem;min-height:40px;display:inline-flex;align-items:center}
+
+      /* Modal de Google Maps en teléfono */
+      .b2b-modal-card{max-height:94vh;border-radius:16px}
+      .b2b-modal-body{padding:1rem;gap:.75rem}
+      #b2bModalMap{height:270px}
+      .b2b-modal-footer{padding:1rem;flex-direction:column}
+      .b2b-modal-footer button{width:100%}
+
+      /* Scroll to top reubicado para convivir con WhatsApp flotante */
+      .scroll-top{bottom:5.5rem;right:1.25rem;width:44px;height:44px}
+      .creator-card{flex-direction:column;text-align:center;gap:.75rem;padding:1.25rem 1rem}
+      .creator-avatar{margin:0 auto}
+    }
+
+    @media(max-width:480px){
+      .floating-wa-btn{
+        padding:.75rem 1.15rem;font-size:.9rem;bottom:1rem;right:1rem;
+      }
+    }
 
     /* ══════════════════ SCROLL REVEAL ══════════════════ */
     .reveal{
@@ -1170,6 +1350,7 @@
         <li><a href="#delivery">Delivery</a></li>
         <li><a href="#mayoristas">Al Mayor</a></li>
         <li><a href="#faq">FAQ</a></li>
+        <li><a href="https://www.instagram.com/manteca.depuercoypuerca/" target="_blank" rel="noopener noreferrer">📸 Instagram</a></li>
         <li><a href="https://wa.me/584144244920?text=Hola!%20Quiero%20pedir%20Manteca%20Puerco%20y%20Puerca" target="_blank" class="nav-cta">Pedir ahora</a></li>
       </ul>
     </div>
@@ -1853,16 +2034,57 @@
       <img src="logo-blanco.png" alt="Puerco & Puerca Logo" class="footer-logo-img">
     </div>
     <div class="footer-brand">Puerco & Puerca</div>
-    <p>Manteca de puerco artesanal · 100% natural</p>
-    <p>📍 Valencia, Estado Carabobo — Venezuela</p>
+    <p style="font-size:1.05rem;color:var(--gold);font-weight:600;margin-bottom:.35rem">Manteca de puerco artesanal · 100% natural</p>
+    <p style="font-size:.95rem;color:rgba(253,248,239,.85)">📍 Valencia, Estado Carabobo — Venezuela</p>
+    
     <div class="footer-links">
-      <a href="https://wa.me/584144244920" target="_blank">💬 WhatsApp</a>
-      <a href="https://instagram.com/puercoyouerca" target="_blank">📸 Instagram</a>
+      <a href="https://wa.me/584144244920?text=Hola!%20Quiero%20pedir%20Manteca%20Puerco%20y%20Puerca" target="_blank" rel="noopener noreferrer">💬 WhatsApp Ventas</a>
+      <a href="https://www.instagram.com/manteca.depuercoypuerca/" target="_blank" rel="noopener noreferrer">📸 @manteca.depuercoypuerca</a>
     </div>
-    <p style="margin-top:2rem;font-size:.72rem;opacity:.35">© 2026 Manteca Puerco y Puerca. Todos los derechos reservados.</p>
+
+    <!-- Caja de Descargos Legales y Términos -->
+    <div class="footer-legal-box">
+      <div class="footer-legal-title">
+        <span>⚖️</span> Descargo de Responsabilidad y Términos de Servicio
+      </div>
+      <p class="footer-legal-text">
+        <strong>Aviso Nutricional y Culinario:</strong> La manteca de cerdo artesanal de <em>Puerco &amp; Puerca</em> es un alimento tradicional 100% natural libre de procesos químicos de hidrogenación y aditivos sintéticos. El contenido informativo y gastronómico divulgado en este sitio web tiene carácter estrictamente educativo, cultural y comercial, por lo que no sustituye el diagnóstico, recomendación o prescripción de un profesional de la salud o nutrición calificado.
+      </p>
+      <p class="footer-legal-text">
+        <strong>Garantía de Calidad y Envasado:</strong> Nuestro producto es elaborado bajo estrictos estándares de higiene alimentaria y envasado en caliente en frascos de vidrio esterilizados de 500 g con cierre hermético. Consérvese en un lugar fresco y seco alejado de la radiación solar directa. No precisa refrigeración mandatoria, aunque se recomienda mantener bien cerrado tras su apertura para preservar sus propiedades organolépticas.
+      </p>
+      <p class="footer-legal-text">
+        <strong>Cobertura de Entregas:</strong> Los despachos se coordinan con previa confirmación para el Gran Valencia (San Diego, Naguanagua, Los Guayos y Valencia Norte). Los pedidos al mayor y al detal son gestionados de forma personalizada para garantizar máxima frescura y puntualidad.
+      </p>
+    </div>
+
+    <!-- Derechos Reservados -->
+    <div class="footer-rights">
+      © 2026 Manteca Puerco &amp; Puerca C.A. Todos los derechos reservados.<br>
+      Marcas, recetas, logotipos y contenidos digitales protegidos por la legislación de propiedad intelectual y derecho de autor.
+    </div>
+
+    <!-- Crédito Profesional del Desarrollador / Gerente -->
+    <div class="creator-card">
+      <div class="creator-avatar">👨‍💻</div>
+      <div class="creator-info">
+        <span class="creator-label">Estrategia Digital &amp; Desarrollo Web</span>
+        <div class="creator-name">Yonathan Aguilar</div>
+        <div class="creator-role">Gerente de Mercadeo y Ventas · Programador Web y de Aplicaciones</div>
+        <a href="https://www.instagram.com/aqui_yonathan/" target="_blank" rel="noopener noreferrer" class="creator-ig-btn">
+          <span>📸</span> Instagram personal: <strong>@aqui_yonathan</strong> →
+        </a>
+      </div>
+    </div>
   </footer>
 
   <button class="scroll-top" id="scrollTop" aria-label="Volver arriba">↑</button>
+
+  <!-- Botón Flotante de WhatsApp para Celulares (+40 años y fácil contacto) -->
+  <a href="https://wa.me/584144244920?text=Hola!%20Quiero%20pedir%20Manteca%20Puerco%20y%20Puerca" class="floating-wa-btn" target="_blank" rel="noopener noreferrer" aria-label="Pedir por WhatsApp">
+    <span class="fwa-icon">💬</span>
+    <span>Pedir por WhatsApp</span>
+  </a>
 
   <!-- ═══ JAVASCRIPT ═══ -->
   <script>
